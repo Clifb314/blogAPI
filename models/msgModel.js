@@ -3,6 +3,7 @@ const Schema = mongoose.Schema
 
 
 const msgSchema = new Schema({
+    title: {type: String, default: ''},
     content: {type: String, required: true},
     author: {type: Schema.Types.ObjectId, required: true, ref: 'userModel'},
     date: {type: Date, required: true, default: new Date()},
