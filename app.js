@@ -14,8 +14,6 @@ const commentsRouter = require('./routes/comments')
 
 //mongoose
 const mongoose = require('mongoose')
-
-
 //connection setup
 const mongoDB = process.env.MONGODB
 mongoose.connect(mongoDB, {useUnifiedTopology: true, useNewUrlParser: true})

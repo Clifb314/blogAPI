@@ -3,6 +3,7 @@ const passport = require('passport')
 const bcrypt = require('bcryptjs')
 const User = require('../models/userModel')
 const { body, validationResult } = require('express-validator')
+const jwt = require('jsonwebtoken')
 
 
 //Get all users
