@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken')
 const { body, validationResult } = require('express-validator')
 
 exports.showPosts = async function(req, res, next) {
-    Message.find({}, {date: -1}).populate('author').exec((err, posts) => {
+    Message.find({}).populate('author').sort({date: -1}).exec((err, posts) => {
         if (err) return res.json(err)
 
         return res.json(posts)

@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 
@@ -13,3 +13,5 @@ const commentSchema = new Schema({
 commentSchema.virtual('easyDate').get(function() {
     return this.date.toLocaleDateString()
 })
+
+module.exports = mongoose.model('commentModel', commentSchema)
