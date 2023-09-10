@@ -6,6 +6,41 @@ var logger = require('morgan');
 const cors = require('cors')
 require('dotenv').config()
 
+//passport stuff
+const passport = require('passport')
+const localStrat = require('passport-local').Strategy
+const JWTStrat = require('passport-jwt').Strategy
+const extractJWT = require('passport-jwt').ExtractJwt
+const User = require('./models/userModel')
+const bcrypt = require('bcryptjs')
+
+passport.use(new localStrat((username, password, done) => {
+  User.findOne({username}, (err, user) => {
+    if (err) return done(err)
+    if (!user) return done(null, false, 'Username not found')
+
+    bcrypt.compare(password, user.password, (err, res) => {
+      if (res) return done(null, user)
+      else return done(null, false, {message: 'Password incorrect'})
+    })
+  })
+}))
+
+
+
+const options = {
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  secret: process.env.SECRET,
+  //issuer: 'CB',
+}
+passport.use(new JWTStrat(options, function(payload, done) {
+  return done(null, payload)
+  // User.findById(payload.sub, function(err, user) {
+  //   if (err) return done(err, false)
+  //   if (user) return done(null, user)
+  //   else return done(null, false)
+  //})
+}))
 
 //routes
 const usersRouter = require('./routes/users')
@@ -14,7 +49,8 @@ const commentsRouter = require('./routes/comments')
 
 
 //mongoose
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+const { ExtractJwt } = require('passport-jwt');
 //connection setup
 const mongoDB = process.env.MONGODB
 mongoose.connect(mongoDB, {useUnifiedTopology: true, useNewUrlParser: true})

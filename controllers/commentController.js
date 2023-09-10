@@ -1,4 +1,5 @@
 const Comment = require('../models/commentModel')
+const Message = require('../models/msgModel')
 const { body, validationResult } = require('express-validator')
 const jwt = require('jsonwebtoken')
 
@@ -30,6 +31,7 @@ exports.createComment = [
             date: new Date(),
         })
         await newComment.save()
+        await Message.findByIdAndUpdate(parent, {$push: {comments: newComment._id}})
         return res.json(newComment)
     }
 ]

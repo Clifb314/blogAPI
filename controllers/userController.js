@@ -4,6 +4,8 @@ const bcrypt = require('bcryptjs')
 const User = require('../models/userModel')
 const { body, validationResult } = require('express-validator')
 const jwt = require('jsonwebtoken')
+const passport = require('passport')
+const bcrypt = require('bcryptjs')
 
 
 //Get all users
@@ -19,8 +21,32 @@ exports.allUsers = async function(req, res, next) {
 }
 
 //login
-exports.login = async function(req, res, next) {
-
+exports.login = function(req, res, next) {
+    passport.authenticate('local', {session: false}, (err, user) => {
+        if (err || !user) {
+            return res.status(401).json({
+                message: 'Incorrect password or username',
+                user,
+            })
+        }
+        //token generation
+        jwt.sign(
+            {
+                _id: user._id,
+                username: user.username,
+                isAdmin: user.isAdmin
+            },
+            process.env.SECRET,
+            {expiresIn: '10m'},
+            (err, token) => {
+                if (err) return res.status(400).json(err)
+                res.json({
+                    token,
+                    user: {_id: user._id, username: user.username, isAdmin: user.isAdmin}
+                })
+            }
+        )
+    })(req, res)
 }
 
 //signup
@@ -80,16 +106,20 @@ exports.signup = [
             })
             await newUser.save()
             //add in jwt here, return a token
+            const { _id, username, isAdmin } = newUser
+            jwt.sign(
+                {_id, username, isAdmin},
+                process.env.SECRET,
+                (err, token) => {
+                    if (err) return next(err)
 
-
-            return res.status(200).json({
-                token,
-                user: {
-                    _id: newUser._id,
-                    username: newUser.username
-                },
-                message: 'Success'
-            })
+                    return res.status(200).json({
+                        token,
+                        user: {_id, username, isAdmin},
+                        message: 'Success'
+                    })
+                }
+            )
         })
     }
 ]

@@ -11,6 +11,8 @@ const userSchema = new Schema({
 })
 
 
-
+userSchema.virtual('isAdmin').get(function() {
+    return this.status === 1 ? true : false
+})
 
 module.exports = mongoose.model('userModel', userSchema)
