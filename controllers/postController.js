@@ -1,9 +1,10 @@
 const Message = require('../models/msgModel')
+const User = require('../models/userModel')
 const jwt = require('jsonwebtoken')
 const { body, validationResult } = require('express-validator')
 
 exports.showPosts = async function(req, res, next) {
-    Message.find({}).populate('author').sort({date: -1}).exec((err, posts) => {
+    Message.find({}).populate('author').sort({date: -1}).limit(15).exec((err, posts) => {
         if (err) return res.json(err)
 
         return res.json(posts)
@@ -12,6 +13,12 @@ exports.showPosts = async function(req, res, next) {
 
 exports.createPost = [
     //validate token
+    jwt.verify(req.token, process.env.SECRET, {issuer: 'CB'}, function(err, decoded) {
+        if (err) return res.status(400).json(err)
+        console.log(decoded)
+        req.decoded = decoded
+        next()
+    }),
 
 
 
@@ -30,7 +37,7 @@ exports.createPost = [
             title,
             content,
             date: new Date(),
-            author: '', //will get from token
+            author: req.decoded._id, //will get from token or will have to find from db
             comments: [],
         })
         await newPost.save()
@@ -48,37 +55,56 @@ exports.updatePost = [
         if (!errors.isEmpty()) {
             return res.json({errors: errors.array()})
         }
-        const newPost = await Message.findByIdAndUpdate(req.params.id, {title: title, content: content}, {new: true}).exec()
+        const newPost = await Message.findByIdAndUpdate(req.params.postID, {title: title, content: content}, {new: true}).exec()
         return res.json(newPost)
     }
 ]
 
 exports.deletePost = async (req, res, next) => {
     //verify token
+    
+    (req, res, next) => {
+        jwt.verify(req.token, process.env.SECRET, {issuer: 'CB'}, function(err, decoded) {
+            if (err) return res.status(400).json(err)
+            req.decoded = decoded
+            next()
+        })
+    },
 
 
 
-    await Message.findByIdAndDelete(req.params.id, function(err) {
-        if (err) return res.json(err)
+        await Message.findByIdAndDelete(req.params.postID, function(err) {
+            if (err) return res.json(err)
 
-        res.json({ message: 'Post deleted' })
-    })
+            res.json({ message: 'Post deleted' })
+        })
 }
 
 exports.likePost = async (req, res, next) => {
     //get user from token?
-    const user = undefined
+    const payload = jwt.verify(req.token, process.env.SECRET, {issuer: 'CB'})
+    const user = payload._id
     //check if user liked the post already, if not, push the like to likes array
-    const post = await Message.findOneAndUpdate({_id: req.params.id, likes: {$nin: [user]}}, {$push: {likes: user}}, {new: true}).exec()
+    const post = await Message.findOneAndUpdate({_id: req.params.postID, likes: {$nin: [user]}}, {$push: {likes: user}}, {new: true}).exec()
 
+    if (post === null) return res.json({error: `Failed to like post`})
 
     return res.json(post)
+}
 
+exports.dislikePost = async (req, res, next) => {
+    const payload = jwt.verify(req.token, process.env.SECRET, {issuer: 'CB'})
+    const user = payload._id
 
+    const post = await Message.findOneAndUpdate({_id: req.params.postID, likes: user}, {$pull: {likes: user}}, {new: true}).exec()
+
+    if (post === null) return res.json({error: `Failed to dislike post`})
+
+    return res.json(post)
 }
 
 exports.postDetail = async (req, res, next) => {
-    const myPost = await Message.findById(req.params.id).populate('author').exec()
+    const myPost = await Message.findById(req.params.postID).populate('author').exec()
 
     if (!myPost) return res.json({error: 'Post not found'})
 

@@ -37,12 +37,13 @@ exports.login = function(req, res, next) {
                 isAdmin: user.isAdmin
             },
             process.env.SECRET,
-            {expiresIn: '10m'},
+            {expiresIn: '10m', issuer: 'CB'},
             (err, token) => {
                 if (err) return res.status(400).json(err)
                 res.json({
                     token,
-                    user: {_id: user._id, username: user.username, isAdmin: user.isAdmin}
+                    user: {_id: user._id, username: user.username, isAdmin: user.isAdmin},
+                    message: 'Signed in'
                 })
             }
         )
@@ -110,6 +111,7 @@ exports.signup = [
             jwt.sign(
                 {_id, username, isAdmin},
                 process.env.SECRET,
+                {expiresIn: '5m', issuer: 'CB'},
                 (err, token) => {
                     if (err) return next(err)
 

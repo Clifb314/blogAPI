@@ -31,7 +31,7 @@ passport.use(new localStrat((username, password, done) => {
 const options = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   secret: process.env.SECRET,
-  //issuer: 'CB',
+  issuer: 'CB',
 }
 passport.use(new JWTStrat(options, function(payload, done) {
   return done(null, payload)
@@ -72,7 +72,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors())
 
 app.use('/api/posts', postsRouter);
-app.use('/api/posts/:postID/comments', commentsRouter)
+app.use('/api/comments/:postID/', commentsRouter)
 app.use('/api/users', usersRouter);
 
 // catch 404 and forward to error handler
