@@ -10,7 +10,7 @@ require('dotenv').config()
 const passport = require('passport')
 const localStrat = require('passport-local').Strategy
 const JWTStrat = require('passport-jwt').Strategy
-const extractJWT = require('passport-jwt').ExtractJwt
+const ExtractJWT = require('passport-jwt').ExtractJwt
 const User = require('./models/userModel')
 const bcrypt = require('bcryptjs')
 
@@ -29,8 +29,8 @@ passport.use(new localStrat((username, password, done) => {
 
 
 const options = {
-  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-  secret: process.env.SECRET,
+  jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
+  secretOrKey: process.env.SECRET,
   issuer: 'CB',
 }
 passport.use(new JWTStrat(options, function(payload, done) {

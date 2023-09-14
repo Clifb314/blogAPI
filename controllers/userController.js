@@ -4,8 +4,6 @@ const bcrypt = require("bcryptjs");
 const User = require("../models/userModel");
 const { body, validationResult } = require("express-validator");
 const jwt = require("jsonwebtoken");
-const passport = require("passport");
-const bcrypt = require("bcryptjs");
 
 //Get all users
 exports.allUsers = async function (req, res, next) {
@@ -13,11 +11,11 @@ exports.allUsers = async function (req, res, next) {
     .sort({ username: -1 })
     .exec();
 
-  if (allUsers.length === 0) {
-    const err = new Error("Database returns no users");
-    res.json(err);
+  if (allUsers.length < 1) {
+    //const err = new Error("Database returns no users");
+    res.json({error: "Database returns no users"});
   } else {
-    res.json(allUsers);
+    res.json({users: allUsers, message: 'success'});
   }
 };
 
@@ -133,9 +131,10 @@ exports.signup = [
 
 //user page
 exports.userDetail = async (req, res, next) => {
-  User.findById(req.params.userID, (err, user) => {
-    if (err) res.json(err);
+  const user = await User.findById(req.params.userID)
 
-    res.json(user);
-  });
+  if (!user) return res.status(400).json({message: 'user not found'})
+
+
+  return res.json(user);;
 };

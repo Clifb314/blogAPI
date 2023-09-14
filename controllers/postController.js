@@ -4,20 +4,20 @@ const jwt = require("jsonwebtoken");
 const { body, validationResult } = require("express-validator");
 
 exports.showPosts = async function (req, res, next) {
-  Message.find({})
+  const allMessages = await Message.find({})
     .populate("author")
     .sort({ date: -1 })
     .limit(15)
-    .exec((err, posts) => {
-      if (err) return res.json(err);
+    .exec();
 
-      return res.json(posts);
-    });
+  if (allMessages.length < 1) return res.json({error: 'No posts found on database'})
+
+  return res.json(allMessages)
 };
 
 exports.createPost = [
   //validate token
-  jwt.verify(
+  (req, res) => {jwt.verify(
     req.token,
     process.env.SECRET,
     { issuer: "CB" },
@@ -27,7 +27,7 @@ exports.createPost = [
       req.decoded = decoded;
       next();
     }
-  ),
+  )},
 
   //validate input
   body("title").trim().escape(),
@@ -88,11 +88,14 @@ exports.deletePost = async (req, res, next) => {
       }
     );
   },
-    await Message.findByIdAndDelete(req.params.postID, function (err) {
-      if (err) return res.json(err);
+  async (req, res, next) => {
+    const myMessage = await Message.findByIdAndDelete(req.params.postID)
+    if (!myMessage) return res.status(400).json({error: 'Post not found'})
 
-      res.json({ message: "Post deleted" });
-    });
+    return res.json({message: `Post (id: ${myMessage._id}) deleted`})
+  }
+
+
 };
 
 exports.likePost = async (req, res, next) => {

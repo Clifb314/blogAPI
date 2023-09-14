@@ -18,3 +18,5 @@ router.delete('/:commentID/delete', commentController.deleteComment)
 
 //comment detail
 router.get('/:commentID', commentController.commentDetail)
+
+module.exports = router

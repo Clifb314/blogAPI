@@ -51,7 +51,7 @@ exports.createComment = [
 
 exports.editComment = [
   //validate token
-  jwt.verify(
+  (req, res) => {jwt.verify(
     req.token,
     process.env.SECRET,
     { issuer: "CB" },
@@ -60,7 +60,7 @@ exports.editComment = [
       req.decoded = decoded;
       next();
     }
-  ),
+  )},
 
   //validate input
   body("author")
@@ -95,11 +95,10 @@ exports.editComment = [
 ];
 
 exports.deleteComment = async (req, res, next) => {
-  await Comment.findByIdAndRemove(req.params.commentID, function (err) {
-    if (err) return res.json(err);
+  const myComment = await Comment.findByIdAndRemove(req.params.commentID)
+  if (!myComment) return res.status(400).json({error: 'Comment not found'})
 
-    return res.json({ message: "Comment deleted" });
-  });
+  return res.json({ message: `Comment (id: ${myComment._id}) deleted` });;
 };
 
 exports.commentDetail = async (req, res) => {
