@@ -6,48 +6,6 @@ var logger = require('morgan');
 const cors = require('cors')
 require('dotenv').config()
 
-//passport stuff
-const passport = require('passport')
-const localStrat = require('passport-local').Strategy
-const JWTStrat = require('passport-jwt').Strategy
-const ExtractJWT = require('passport-jwt').ExtractJwt
-const User = require('./models/userModel')
-const bcrypt = require('bcryptjs')
-
-passport.use(new localStrat((username, password, done) => {
-  User.findOne({username}, (err, user) => {
-    if (err) return done(err)
-    if (!user) return done(null, false, 'Username not found')
-
-    bcrypt.compare(password, user.password, (err, res) => {
-      if (res) return done(null, user)
-      else return done(null, false, {message: 'Password incorrect'})
-    })
-  })
-}))
-
-
-
-const options = {
-  jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
-  secretOrKey: process.env.SECRET,
-  issuer: 'CB',
-}
-passport.use(new JWTStrat(options, function(payload, done) {
-  return done(null, payload)
-  // User.findById(payload.sub, function(err, user) {
-  //   if (err) return done(err, false)
-  //   if (user) return done(null, user)
-  //   else return done(null, false)
-  //})
-}))
-
-//routes
-const usersRouter = require('./routes/users')
-const postsRouter = require('./routes/posts')
-const commentsRouter = require('./routes/comments')
-
-
 //mongoose
 const mongoose = require('mongoose');
 const { ExtractJwt } = require('passport-jwt');
@@ -70,6 +28,47 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors())
+
+//passport stuff
+const passport = require('passport')
+const localStrat = require('passport-local').Strategy
+const JWTStrat = require('passport-jwt').Strategy
+const ExtractJWT = require('passport-jwt').ExtractJwt
+const User = require('./models/userModel')
+const bcrypt = require('bcryptjs')
+
+passport.use(new localStrat(async (username, password, done) => {
+  const myUser = await User.findOne({username}).exec()
+  if (!myUser) return done(null, false, 'Username not found')
+    
+
+  bcrypt.compare(password, myUser._password, (err, res) => {
+      if (res) return done(null, myUser)
+      else return done(null, false, {message: 'Password incorrect'})
+    })
+  })
+)
+
+
+
+const options = {
+  jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
+  secretOrKey: process.env.SECRET,
+  issuer: 'CB',
+}
+passport.use(new JWTStrat(options, function(payload, done) {
+  return done(null, payload)
+  // User.findById(payload.sub, function(err, user) {
+  //   if (err) return done(err, false)
+  //   if (user) return done(null, user)
+  //   else return done(null, false)
+  //})
+}))
+
+//routes
+const usersRouter = require('./routes/users')
+const postsRouter = require('./routes/posts')
+const commentsRouter = require('./routes/comments')
 
 app.use('/api/posts', postsRouter);
 app.use('/api/comments/:postID/', commentsRouter)

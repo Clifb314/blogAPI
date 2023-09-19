@@ -8,6 +8,10 @@ router.get('/', userController.allUsers);
 //log in
 router.post('/login', userController.login)
 
+//account page
+
+//test page
+router.post('/test', userController.test)
 
 //sign in
 router.post('/signup', userController.signup)
