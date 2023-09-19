@@ -15,11 +15,25 @@ export default function Login(props) {
         Auth.login(username, password)
     }
 
+    function handleChange(e) {
+        const {name, value} = e.target.value
+        if (name === 'username') {
+            setUsername(value)
+        } else {
+            setPassword(value)
+        }
+
+    }
+
 
     return (
         <div className="loginDiv">
             <form id="loginForm" onSubmit={handleSubmit}>
-                <input></input>
+                <label htmlFor="username">Username: </label>
+                <input name="username" value={username} onChange={handleChange} />
+                <label htmlFor="password">Password: </label>
+                <input name="password" value={password} onChange={handleChange} />
+                <button type='submit' disabled={username && password ? false : true}>Log in</button>
             </form>
 
         </div>

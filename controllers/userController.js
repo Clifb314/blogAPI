@@ -20,15 +20,6 @@ exports.allUsers = async function (req, res, next) {
   }
 };
 
-//testing
-exports.test = [
-  body("username").trim(),
-  body("password").trim(),
-  (req, res, next) => {
-    const { username, password } = req.body;
-    return res.json({ username, password });
-  },
-];
 
 //login
 exports.login = function (req, res, next) {
