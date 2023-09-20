@@ -197,3 +197,50 @@ exports.myHome = [
     else return res.json(myUser);
   },
 ];
+
+exports.editSelf = [
+  //validate token
+  (req, res, next) => {
+
+  },
+  //sanitize input
+  body("username", "Username must be at least 3 characters")
+  .trim()
+  .escape()
+  .isLength({ min: 3 })
+  .isAlphanumeric()
+  .withMessage("Username: No Special Characters"),
+body("email")
+  .trim()
+  .escape()
+  .isEmail()
+  .withMessage("Please enter valid email"),
+body("password").trim().escape(),
+//.isStrongPassword({})
+//.withMessage("Please review password requirements"),
+body("checkPW")
+  .trim()
+  .escape()
+  .custom(async (value, { req }) => {
+    if (value !== req.body.password) {
+      throw new Error("Passwords must match");
+    }
+    return true;
+  }),
+
+  async (req, res, next) => {
+    const myID = req.decoded._id
+    if (!myID) return res.status(401).json({error: 'Access denied'})
+    const { username, email, password } = req.body
+    bcrypt.hash(password, 10, async (err, hash) => {
+      if (err) return next(err)
+      const editedUser = {
+        username,
+        email,
+        _password: hash,
+      }
+      await User.findByIdAndUpdate(myID, editedUser).exec()
+      return res.json({message: `${username} editted successfully`})
+    })
+  }
+]

@@ -8,6 +8,9 @@ router.get('/', userController.allUsers);
 //log in
 router.post('/login', userController.login)
 
+//edit account
+router.put('/edit', userController.editSelf)
+
 //account page
 router.get('/home', userController.myHome)
 
