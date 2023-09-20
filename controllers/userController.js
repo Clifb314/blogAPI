@@ -8,7 +8,10 @@ const asyncHandler = require("express-async-handler");
 
 //Get all users
 exports.allUsers = async function (req, res, next) {
-  const allUsers = await User.find({}, { _password: 0, _id: 0 })
+  const allUsers = await User.find(
+    {},
+    { _password: 0, _id: 0, email: 0, status: 0 }
+  )
     .sort({ username: -1 })
     .exec();
 
@@ -19,7 +22,6 @@ exports.allUsers = async function (req, res, next) {
     res.json({ users: allUsers, message: "success" });
   }
 };
-
 
 //login
 exports.login = function (req, res, next) {
@@ -132,10 +134,66 @@ exports.signup = [
 ];
 
 //user page
-exports.userDetail = async (req, res, next) => {
-  const user = await User.findById(req.params.userID);
+exports.userDetail = [
+  (req, res, next) => {
+    jwt.verify(
+      req.token,
+      process.env.SECRET,
+      { issuer: "CB" },
+      function (err, decoded) {
+        if (err) return res.status(401).json(err);
+        req.decoded = decoded;
+        next();
+      }
+    );
+  },
 
-  if (!user) return res.status(400).json({ message: "user not found" });
+  async (req, res, next) => {
+    //should validate first
+    const user = await User.findById(req.params.userID)
+      .select({ _password: 0, email: 0, status: 0 })
+      .populate({
+        path: "messages",
+        sort: { date: -1 },
+        limit: 5,
+      })
+      .exec();
 
-  return res.json(user);
-};
+    if (!user) return res.status(400).json({ message: "user not found" });
+
+    return res.json(user);
+  },
+];
+
+exports.myHome = [
+  (req, res, next) => {
+    jwt.verify(
+      req.token,
+      process.env.SECRET,
+      { issuer: "CB" },
+      function (err, decoded) {
+        if (err) return res.status(401).json(err);
+        req.decoded = decoded;
+        next();
+      }
+    );
+  },
+
+  async (req, res, next) => {
+    const myID = req.decoded._id;
+    if (!myID)
+      return res
+        .status(401)
+        .json({ error: "Must be logged in to access this page" });
+    const myUser = await User.findById(myID, '-_password')
+      .populate({
+        path: "messages",
+        sort: { date: -1 },
+        limit: 5,
+      })
+      .exec();
+
+    if (!myUser) return res.status(400).json({ message: "User not found" });
+    else return res.json(myUser);
+  },
+];

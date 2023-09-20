@@ -4,7 +4,10 @@ const APIurl = 'http://localhost:5000/api/users/'
 const postsURL = 'http://localhost:5000/api/posts/'
 
 
+
 class UserService {
+
+
     async getAllUsers() {
         try {
             const response = fetch(APIurl, {
@@ -35,9 +38,39 @@ class UserService {
         }
     }
 
+    async getUserHome() {
+        try {
+            //set up a seperate homepage from user detail page
+            const response = fetch(`${APIurl}`, {
+                method: 'GET',
+                mode: 'cors',
+                headers: authHeader(),
+            })
+            if (!response.ok) throw new Error('Error accessing database')
+            else return response
+        } catch {
+            console.error('Error', error)
+        }
+    }
+
     async getAllPosts() {
         try {
             const response = fetch(postsURL, {
+                method: `GET`,
+                mode: "cors",
+                headers: authHeader()
+            })
+            if (!response.ok) {
+                throw new Error('Error accessing database')
+            } else return response
+        } catch {
+            console.error('Error', error)
+        }    
+    }
+
+    async getTopPosts() {
+        try {
+            const response = fetch(`${postsURL}top`, {
                 method: `GET`,
                 mode: "cors",
                 headers: authHeader()

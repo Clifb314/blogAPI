@@ -15,6 +15,19 @@ exports.showPosts = async function (req, res, next) {
   return res.json(allMessages)
 };
 
+exports.topPosts = async function (req, res, next) {
+  const allMessages = await Message.find({})
+    .populate("author")
+    .sort({ likes: -1 })
+    .limit(15)
+    .exec();
+
+  if (allMessages.length < 1) return res.json({error: 'No posts found on database'})
+
+  return res.json(allMessages)
+};
+
+
 exports.createPost = [
   //validate token
   (req, res) => {jwt.verify(

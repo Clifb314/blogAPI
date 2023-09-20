@@ -46,6 +46,7 @@ class Auth {
             if (!response.ok) {
                 throw new Error('Error writing to database')
             }
+            //does register return the user?
         } catch {
             console.error('Error', error)
         }

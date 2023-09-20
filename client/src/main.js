@@ -5,6 +5,7 @@ import Bubble from './components/bubble'
 import Login from './components/login'
 import Home from './components/home'
 import auth from './utils/auth'
+import Posts from './components/posts'
 
 
 export default function Main() {
@@ -26,7 +27,8 @@ export default function Main() {
                     <Route path='/home' element={<Home user={user} />} />
                     <Route path='/account' element={} />
                     <Route path='/:id' element={} />
-                    <Route path='/recents' element={} />
+                    <Route path='/recents' element={<Posts user={user} sorting='recent' />} />
+                    <Route path='/top' element={<Posts user={user} sorting='top'/>} />
                     <Route path='/login' element={<Login />} />
                 </Routes>
                 <Bubble user={user} />

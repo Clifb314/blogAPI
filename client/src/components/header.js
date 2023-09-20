@@ -32,8 +32,8 @@ export default function Header({ user, setUser }) {
            <div className="homeLinks">
                 <ul>
                     <li><Link to='/home'>Home</Link></li>
-                    <li>All Posts</li>
-                    <li>Top Posts</li>
+                    <li><Link to='/recents'>Recent Posts</Link></li>
+                    <li><Link to='/top'>Top Posts</Link></li>
                     <li>{checkUser}</li>
                 </ul>
             </div> 

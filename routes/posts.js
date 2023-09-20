@@ -7,6 +7,9 @@ const postController = require('../controllers/postController')
 //All posts
 router.get('/', postController.showPosts)
 
+//top posts
+router.get('/top', postController.topPosts)
+
 //create new post
 router.post('/create', postController.createPost)
 

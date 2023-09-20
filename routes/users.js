@@ -9,6 +9,7 @@ router.get('/', userController.allUsers);
 router.post('/login', userController.login)
 
 //account page
+router.get('/home', userController.myHome)
 
 //test page
 router.post('/test', userController.test)
