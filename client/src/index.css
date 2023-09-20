@@ -1,3 +1,19 @@
+:root {
+  --toast-success-hue: 150;
+  --toast-failure-hue: 20;
+  --toast-warning-hue: 205;
+  --toast-padding: 1.5em;
+  --toast-margin: 0.5em;
+  --toast-bg-color-fallback: rgb(179, 179, 179);
+  --toast-text-color-fallback: black;
+  --toast-opacity: 0.99;
+  --toast-content-gap: 1em;
+  --toast-speed: 250ms;
+  --toast-list-scrollbar-width: 0.35em;
+  --toast-list-width: 400px;
+  --toast-list-padding: 1em;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -10,4 +26,93 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+
+
+
+
+
+
+/* Toast notification styling */
+
+.toast {
+  background-color: var(--toast-bg-color-fallback);
+  padding: var(--toast-padding);
+  box-shadow: gray 0px 1px 3px 0px, rgb(165, 164, 164) 0px 1px 2px 0px;
+  position: relative;
+  color: var(--toast-text-color-fallback);
+  opacity: var(--toast-opacity);
+}
+
+.toast:hover {
+  opacity: 1;
+}
+
+.toast + .toast {
+  margin-top: var(--toast-margin);
+}
+
+.toastMsg {
+  display: flex;
+  gap: var(--toast-content-gap);
+  align-items: top;
+}
+
+.toastBtn {
+  position: absolute;
+  top: 0.5em;
+  right: 0.5em;
+  padding: 0;
+  line-height: 1;
+  height: 1em;
+  width: 1em;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+}
+
+.type-success {
+  color: rgb(255, 255, 255);
+  background-color: rgb(74, 91, 185);
+}
+
+.type-failure {
+  color: white;
+  background-color: rgb(184, 79, 79);
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-out {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.toast-list {
+  position: fixed;
+  padding: var(--toast-list-padding);
+  width: 100%;
+  max-width: var(--toast-list-width);
+  max-height: 100vh;
+  overflow: hidden auto;
+  bottom: 0;
+  left: 0;
+  animation: slide-out var(--toast-speed);
+}
+
+.toast-list .toast {
+  transition: transform var(--toast-speed), opacity var(--toast-speed), box-shadow var(--toast-speed) ease-in-out;
 }

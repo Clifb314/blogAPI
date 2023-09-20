@@ -125,7 +125,7 @@ exports.signup = [
           return res.status(200).json({
             token,
             user: { _id, username, isAdmin },
-            message: "Success",
+            message: "Logged in",
           });
         }
       );
@@ -201,7 +201,11 @@ exports.myHome = [
 exports.editSelf = [
   //validate token
   (req, res, next) => {
-
+    jwt.verify(req.token, process.env.SECRET, (err, decoded) => {
+      if (err) return res.status(401).json(err)
+      req.decoded = decoded
+      next()
+    })
   },
   //sanitize input
   body("username", "Username must be at least 3 characters")
