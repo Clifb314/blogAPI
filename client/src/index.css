@@ -12,6 +12,20 @@
   --toast-list-scrollbar-width: 0.35em;
   --toast-list-width: 400px;
   --toast-list-padding: 1em;
+  --secondary-hue: 25;
+  --input-radius: 0.25em;
+  --input-margin: 0.5em;
+  --input-padding: 1em;
+  --input-border-width: 1px;
+  --paragraph-margin: 1em;
+  --text-leading: 1.5;
+  box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
 }
 
 body {
