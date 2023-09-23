@@ -12,12 +12,12 @@ exports.allUsers = async function (req, res, next) {
     {},
     { _password: 0, _id: 0, email: 0, status: 0 }
   )
-    .sort({ username: -1 })
+    .sort({ username: 1 })
     .exec();
 
   if (allUsers.length < 1) {
     //const err = new Error("Database returns no users");
-    res.json({ error: "Database returns no users" });
+    res.json({ err: "Database returns no users" });
   } else {
     res.json({ users: allUsers, message: "success" });
   }
@@ -193,7 +193,7 @@ exports.myHome = [
       })
       .exec();
 
-    if (!myUser) return res.status(400).json({ message: "User not found" });
+    if (!myUser) return res.status(400).json({ err: "User not found" });
     else return res.json(myUser);
   },
 ];
@@ -219,9 +219,15 @@ body("email")
   .escape()
   .isEmail()
   .withMessage("Please enter valid email"),
-body("password").trim().escape(),
-//.isStrongPassword({})
-//.withMessage("Please review password requirements"),
+body("password").trim().escape()
+.isStrongPassword({
+  minLength: 8,
+  minLowercase: 1,
+  minUppercase: 1,
+  minNumbers: 1,
+  minSymbols: 1,
+})
+.withMessage("Please review password requirements"),
 body("checkPW")
   .trim()
   .escape()
@@ -231,19 +237,28 @@ body("checkPW")
     }
     return true;
   }),
+  body("oldPW").trim().escape(),
 
   async (req, res, next) => {
     const myID = req.decoded._id
     if (!myID) return res.status(401).json({error: 'Access denied'})
-    const { username, email, password } = req.body
+    const myUser = User.findById(myID).exec()
+    const { username, email, password, oldPW } = req.body
+    bcrypt.compare(oldPW, myUser._password, function(err, result) {
+      if (err) return res.status(400).json({err: 'Error accessing database'})
+      else if (result === false) return res.status(401).json({err: 'Access denied. Incorrect Password'}) 
+    })
+
     bcrypt.hash(password, 10, async (err, hash) => {
       if (err) return next(err)
-      const editedUser = {
+      myUser = {
+        ...myUser,
         username,
         email,
         _password: hash,
       }
-      await User.findByIdAndUpdate(myID, editedUser).exec()
+      //await User.findByIdAndUpdate(myID, editedUser).exec()
+      await myUser.save()
       return res.json({message: `${username} editted successfully`})
     })
   }

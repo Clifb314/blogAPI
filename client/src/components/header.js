@@ -15,13 +15,13 @@ export default function Header({ user, setUser }) {
     let checkUser
     if (user) {
         checkUser = (
-            <Link to='/' onClick={logout}>Log Out</Link>
+            <Link to='/home' onClick={logout}>Log Out</Link>
             ) 
     } else {
         checkUser = (
             <ul>
-                <li><Link to='/login'></Link></li>
-                <li><Link to='/signup'></Link></li>
+                <li><Link to='/login'>Login</Link></li>
+                <li><Link to='/register'>Sign Up</Link></li>
             </ul>
         )
     }

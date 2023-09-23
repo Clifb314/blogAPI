@@ -21,7 +21,7 @@ export default function Home({ user }) {
             <div>
                 <p>Welcome back, {myUser.username}!</p>
                 <p>Here are you're most recent posts:</p>
-                {messages}
+                <div class="msgCont">{messages}</div>
             </div>
         )
     }

@@ -1,4 +1,6 @@
 import authHeader from "./authHeader";
+import ToastContainer from "../components/toastCont";
+import { post } from "../../../routes/users";
 
 const APIurl = 'http://localhost:5000/api/users/'
 const postsURL = 'http://localhost:5000/api/posts/'
@@ -21,6 +23,7 @@ class UserService {
             } else return response
         } catch {
             console.error('Error', error)
+            return {err: 'Could not access database'}
         }
     }
 
@@ -36,6 +39,7 @@ class UserService {
             } else return response
         } catch {
             console.error('Error', error)
+            return {err: 'Could not access database'}
         }
     }
 
@@ -51,6 +55,7 @@ class UserService {
             else return response
         } catch {
             console.error('Error', error)
+            return {err: 'Could not access database'}
         }
     }
 
@@ -67,6 +72,7 @@ class UserService {
             else return response
         } catch {
             console.error('Error', error)
+            return {err: 'Could not access database'}
         }
     }
 //Post data
@@ -82,6 +88,7 @@ class UserService {
             } else return response
         } catch {
             console.error('Error', error)
+            return {err: 'Could not access database'}
         }    
     }
 
@@ -97,6 +104,7 @@ class UserService {
             } else return response
         } catch {
             console.error('Error', error)
+            return {err: 'Could not access database'}
         }    
     }
 
@@ -112,9 +120,42 @@ class UserService {
             } else return response
         } catch {
             console.error('Error', error)
+            return {err: 'Could not access database'}
+        }
+    }
+
+    async newPost(body) {
+        try {
+            const response = fetch(postsURL + 'create', {
+                method: 'POST',
+                mode: 'cors',
+                headers: authHeader(),
+                body
+            })
+            if (!response.ok) {
+                throw new Error('Error accessing database')
+            } else return response
+        } catch {
+            console.error('Error', error)
+            return {err: 'Could not access database'}
         }
     }
 //Comment data
+
+    async getComments(postID) {
+        try {
+            const response = fetch(comURL + postID, {
+                method: 'GET',
+                mode: 'cors',
+                headers: authHeader(),
+            })
+            if (!response.ok) throw new Error('Error accessing database')
+            else return response
+        } catch {
+            console.error('Error', error)
+            return {err: 'Could not access database'}
+        }
+    }
 }
 
 export default new UserService

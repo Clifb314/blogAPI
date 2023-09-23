@@ -6,13 +6,15 @@ import { isEmail } from 'validator'
 import Auth from "../utils/auth";
 
 
-export default function Login(props) {
+export default function Login({ noti }) {
     const [ username, setUsername ] = useState('')
     const [password, setPassword] = useState('')
 
     function handleSubmit(e) {
         e.preventDefault()
-        Auth.login(username, password)
+        const response = Auth.login(username, password)
+        if (response.err) noti('failure', response.err)
+        else noti('success', response.message)
     }
 
     function handleChange(e) {

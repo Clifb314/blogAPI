@@ -1,12 +1,15 @@
 import React, {useState} from "react";
 import UserService from "../utils/dataAccess";
 
-export default async function Posts({ user, sorting }) {
+export default async function Posts({ user, sorting, noti }) {
 
     let posts
     if (sorting === 'recent') {
         posts = await UserService.getAllPosts()
     } else posts = await UserService.getTopPosts()
+
+    if (posts.err) noti('failure', posts.err)
+    else noti('success', 'Posts loaded')
 
     const display = posts.map(msg => {
         return (

@@ -1,4 +1,5 @@
 import { localsName } from "ejs"
+import ToastContainer from "../components/toastCont"
 
 const url = 'http://localhost:5000/api/'
 
@@ -18,37 +19,37 @@ class Auth {
                 throw new Error('Error accessing database')
             } else {
                 localStorage.setItem('user', JSON.stringify(response.data))
+                return {message: 'Logged in'}
             }
 
         } catch {
             console.error('Error', error)
+            return {err: 'Could not access database'}
         }
     }
 
     logout() {
         localStorage.removeItem('user')
+        return {message: 'successfully logged out'}
     }
 
-    async register(username, email,  password, checkPW) {
+    async register(body) {
         //maybe take checkPW out of express and just validate in react
         //add try/catch block
         try {
             const response = fetch(`${url}/signup`, {
                 method: 'POST',
                 mode: 'cors',
-                body: {
-                    username,
-                    email,
-                    password,
-                    checkPW
-                }
+                body,
             })
             if (!response.ok) {
                 throw new Error('Error writing to database')
             }
-            //does register return the user?
+            //should register return the user? should it log you in?
+            return {message: 'Signed up!'}
         } catch {
             console.error('Error', error)
+            return {err: 'Could not access database'}
         }
     }
 
