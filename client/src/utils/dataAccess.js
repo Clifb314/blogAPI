@@ -86,6 +86,7 @@ class UserService {
             if (!response.ok) {
                 throw new Error('Error accessing database')
             } else return response
+            //returns an array of objects
         } catch {
             console.error('Error', error)
             return {err: 'Could not access database'}
@@ -102,6 +103,7 @@ class UserService {
             if (!response.ok) {
                 throw new Error('Error accessing database')
             } else return response
+            //returns an array of objects
         } catch {
             console.error('Error', error)
             return {err: 'Could not access database'}
@@ -140,6 +142,39 @@ class UserService {
             return {err: 'Could not access database'}
         }
     }
+
+    async editPost(postID, body) {
+        try {
+            const response = fetch(postsURL + postID + '/edit', {
+                method: 'PUT',
+                mode: 'cors',
+                headers: authHeader(),
+                body
+            })
+            if (!response.ok) {
+                throw new Error('Error accessing database')
+            } else return response
+        } catch {
+            console.error('Error', error)
+            return {err: 'Could not access database'}
+        }
+    }
+
+    async likePost(postID, up) {
+        const direction = up ? '/like' : '/dislike'
+        try {        
+                const response = fetch(postsURL + postID + direction, {
+                method: 'POST',
+                mode: 'cors',
+                headers: authHeader()
+            })
+            if (!response.ok) throw new Error('Error accessing database')
+            else return response
+        } catch {
+            console.error('Error', error)
+            return {err: 'Could not access database'}
+        }    
+    }
 //Comment data
 
     async getComments(postID) {
@@ -151,6 +186,22 @@ class UserService {
             })
             if (!response.ok) throw new Error('Error accessing database')
             else return response
+        } catch {
+            console.error('Error', error)
+            return {err: 'Could not access database'}
+        }
+    }
+
+    async postComment(postID, body) {
+        try {
+            const response = fetch(comURL + postID + '/create', {
+                method: 'POST',
+                mode: 'cors',
+                headers: authHeader(),
+                body
+            })
+            if (!response.ok) throw new Error('Error accessing database')
+            else return {comment: response, message: 'Comment posted'}
         } catch {
             console.error('Error', error)
             return {err: 'Could not access database'}

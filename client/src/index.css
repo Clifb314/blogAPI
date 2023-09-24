@@ -42,7 +42,22 @@ code {
     monospace;
 }
 
+/* Main */
 
+div.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+div.header {
+  width: 100%;
+  height: 10vh;
+}
+
+div.header li {
+  list-style: none;
+}
 
 
 

@@ -81,13 +81,13 @@ exports.editComment = [
     const { author, content, date, parent, id } = req.body;
 
     if (!errors.isEmpty()) return res.json(errors.array());
-    const update = {
-      author,
-      content,
-      date,
-      parent,
-    };
-    const newComment = await Comment.findByIdAndUpdate(id, update, {
+    // const update = {
+    //   author,
+    //   content,
+    //   date,
+    //   parent,
+    // };
+    const newComment = await Comment.findByIdAndUpdate(id, {content: content}, {
       new: true,
     }).exec();
     return res.json(newComment);

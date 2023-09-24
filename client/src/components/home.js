@@ -1,5 +1,6 @@
 import React, {useState} from "react";
 import UserService from "../utils/dataAccess";
+import MsgCard from "./msgCard";
 
 
 export default function Home({ user }) {
@@ -9,19 +10,11 @@ export default function Home({ user }) {
     async function userHome() {
         const myUser = await UserService.getUserHome()
         //should makes comments a link to more info
-        const messages = myUser.messages.map(msg => {
-            <div className="msgCard">
-                <p>{msg.content}</p>
-                <p>Date: {msg.easyDate}</p>
-                <p>Likes: {msg.countLikes}</p>
-                <p>Comments: {msg.countComments}</p>
-            </div>
-        })
         return (
             <div>
                 <p>Welcome back, {myUser.username}!</p>
                 <p>Here are you're most recent posts:</p>
-                <div class="msgCont">{messages}</div>
+                <MsgCard arr={myUser.messages} />
             </div>
         )
     }
