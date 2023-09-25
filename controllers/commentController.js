@@ -17,11 +17,11 @@ exports.allComments = async (req, res) => {
 
 exports.createComment = [
   //validate input
-  body("author")
-    .trim()
-    .isLength({ min: 1 })
-    .withMessage("Username is required")
-    .escape(),
+  // body("author")
+  //   .trim()
+  //   .isLength({ min: 1 })
+  //   .withMessage("Username is required")
+  //   .escape(),
   body("content")
     .trim()
     .isLength({ min: 1 })
@@ -29,20 +29,22 @@ exports.createComment = [
     .escape(),
 
   async (req, res) => {
+    const decoded = jwt.verify(req.token, process.env.SECRET, {issuer: 'CB'})
     const errors = validationResult(req.body);
     //will pass parent post ID as a hidden input
-    const { author, content, parent } = req.body;
+    //NO get author from token, get parent from params
+    //const { author, content, parent } = req.body;
 
     if (!errors.isEmpty()) return res.json(errors.array());
 
     const newComment = new Comment({
-      author,
-      content,
-      parent,
+      author: decoded._id,
+      content: req.body.content,
+      parent: req.params.postID,
       date: new Date(),
     });
     await newComment.save();
-    await Message.findByIdAndUpdate(parent, {
+    await Message.findByIdAndUpdate(req.params.postID, {
       $push: { comments: newComment._id },
     });
     return res.json(newComment);

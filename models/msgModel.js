@@ -19,7 +19,7 @@ msgSchema.virtual('countLikes').get(function() {
     return this.likes.length + 1
 })
 
-msg.Schema.virtual('countComments').get(function() {
+msgSchema.virtual('countComments').get(function() {
     return this.comments.length + 1
 })
 

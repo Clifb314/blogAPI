@@ -15,7 +15,7 @@ router.put('/edit', userController.editSelf)
 router.get('/home', userController.myHome)
 
 //test page
-router.post('/test', userController.test)
+//router.post('/test', userController.test)
 
 //sign in
 router.post('/signup', userController.signup)

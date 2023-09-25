@@ -164,7 +164,7 @@ class UserService {
         const direction = up ? '/like' : '/dislike'
         try {        
                 const response = fetch(postsURL + postID + direction, {
-                method: 'POST',
+                method: 'PUT',
                 mode: 'cors',
                 headers: authHeader()
             })
@@ -174,6 +174,21 @@ class UserService {
             console.error('Error', error)
             return {err: 'Could not access database'}
         }    
+    }
+
+    async deletePost(postID) {
+        try {
+            const response = fetch(postsURL + postID + '/delete', {
+                method: "DELETE",
+                mode: 'cors',
+                headers: authHeader()
+            })
+            if (!response.ok) throw new Error('Error accessing database')
+            else return response
+        } catch {
+            console.error('Error', error)
+            return {err: 'Could not access database'}
+        }
     }
 //Comment data
 

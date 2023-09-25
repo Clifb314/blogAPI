@@ -3,7 +3,7 @@ import UserService from "../utils/dataAccess";
 import MsgCard from "./msgCard";
 
 
-export default function Home({ user }) {
+export default function Home({ user, noti }) {
     //Lets display most recent post, total votes, etc for signed in user
     //for guest: explanation of what's viewable, instructions to sign up
 
@@ -14,7 +14,7 @@ export default function Home({ user }) {
             <div>
                 <p>Welcome back, {myUser.username}!</p>
                 <p>Here are you're most recent posts:</p>
-                <MsgCard arr={myUser.messages} />
+                <MsgCard arr={myUser.messages} noti={noti} home={true} />
             </div>
         )
     }

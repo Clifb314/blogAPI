@@ -5,6 +5,7 @@ const { body, validationResult } = require("express-validator");
 
 exports.showPosts = async function (req, res, next) {
   const allMessages = await Message.find({})
+  //use projection to take password out of here
     .populate("author")
     .sort({ date: -1 })
     .limit(15)
@@ -30,7 +31,7 @@ exports.topPosts = async function (req, res, next) {
 
 exports.createPost = [
   //validate token
-  (req, res) => {jwt.verify(
+  (req, res, next) => {jwt.verify(
     req.token,
     process.env.SECRET,
     { issuer: "CB" },
@@ -46,7 +47,7 @@ exports.createPost = [
   body("title").trim().escape(),
   body("content").trim().isLength({ min: 1 }).escape(),
 
-  async (res, req, next) => {
+  async (req, res, next) => {
     const errors = validationResult(req.body);
     const { title, content } = req.body;
 
@@ -60,12 +61,15 @@ exports.createPost = [
       author: req.decoded._id, //will get from token or will have to find from db
       comments: [],
     });
+    //need to push id to User
     await newPost.save();
+    await User.findByIdAndUpdate(req.decoded._id, {$push: {messages: newPost._id}})
     return res.json(newPost);
   },
 ];
 
 exports.updatePost = [
+  //should verify token/author
   body("title").trim().escape(),
   body("content").trim().isLength({ min: 1 }).escape(),
 
@@ -86,30 +90,32 @@ exports.updatePost = [
   },
 ];
 
-exports.deletePost = async (req, res, next) => {
+exports.deletePost = [
   //verify token
+  // (req, res, next) => {
+  //   jwt.verify(
+  //     req.token,
+  //     process.env.SECRET,
+  //     { issuer: "CB" },
+  //     function (err, decoded) {
+  //       if (err) return res.status(400).json(err);
+  //       req.decoded = decoded;
+  //       next();
+  //     }
+  //   );
+  // },
 
-  (req, res, next) => {
-    jwt.verify(
-      req.token,
-      process.env.SECRET,
-      { issuer: "CB" },
-      function (err, decoded) {
-        if (err) return res.status(400).json(err);
-        req.decoded = decoded;
-        next();
-      }
-    );
-  },
   async (req, res, next) => {
-    const myMessage = await Message.findByIdAndDelete(req.params.postID)
-    if (!myMessage) return res.status(400).json({error: 'Post not found'})
+    const decoded = jwt.verify(req.token, process.env.SECRET, {issuer: 'CB'})
+    //should check that user is author
+    //const myMessage = await Message.findByIdAndDelete(req.params.postID).exec()
+    const myMessage = await Message.findOneAndRemove({_id: req.params.postID, author: decoded._id}).exec()
+    if (!myMessage) return res.status(400).json({error: 'Post not found or author/user mismatch'})
 
     return res.json({message: `Post (id: ${myMessage._id}) deleted`})
   }
+]
 
-
-};
 
 exports.likePost = async (req, res, next) => {
   //get user from token?
@@ -124,7 +130,7 @@ exports.likePost = async (req, res, next) => {
 
   if (post === null) return res.json({ error: `Failed to like post` });
 
-  return res.json(post);
+  return res.json({post, message: 'Like sent'});
 };
 
 exports.dislikePost = async (req, res, next) => {
@@ -139,7 +145,7 @@ exports.dislikePost = async (req, res, next) => {
 
   if (post === null) return res.json({ error: `Failed to dislike post` });
 
-  return res.json(post);
+  return res.json({post, message: 'like removed'});
 };
 
 exports.postDetail = async (req, res, next) => {

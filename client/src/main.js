@@ -45,7 +45,7 @@ export default function Main() {
             <BrowserRouter>
                 <Header user={user} setUser={setUser} />
                 <Routes>
-                    <Route path='/home' element={<Home user={user} />} />
+                    <Route path='/home' element={<Home user={user} noti={newNoti} />} />
                     <Route path='/account' element={<AccountPage user={user} noti={newNoti} />} />
                     <Route path='/users' element={<UsersPage user={user} noti={newNoti} />} />
                     <Route path='/recents' element={<Posts user={user} sorting='recent' noti={newNoti} />} />

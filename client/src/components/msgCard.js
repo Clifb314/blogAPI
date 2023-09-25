@@ -3,9 +3,10 @@ import PopComments from "./popComments";
 import CommentForm from "./commentForm";
 import auth from "../utils/auth";
 import UserService from "../utils/dataAccess";
+import { uuid } from "uuidv4";
 
 
-export default function MsgCard({ arr, home }) {
+export default function MsgCard({ arr, noti }) {
     const [editting, setEditting] = useState(false)
     const [ openMsg, setOpenMsg ] = useState({})
     const myUser = auth.getUser()
@@ -47,10 +48,21 @@ export default function MsgCard({ arr, home }) {
         console.log(result)
     }
 
+    function handleDelete(postID) {
+        const result = UserService.deletePost(postID)
+        if (result.err) noti('failure', result.err)
+        else {
+            noti('success', 'Post deleted')
+            arr = arr.filter(msg => msg._id !== postID)
+        }
+    }
+
 
     const display = arr.map(msg => {
+        const authorID = msg.author._id ? msg.author._id : msg.author
+        const key = uuid()
         return (
-            <div className="msgDiv">
+            <div className="msgDiv" key={key}>
                 <div className="msgCard" display={editting ? 'none' : 'block'}>
                     <p display={home ? 'none' : 'block'}>Author: {msg.author.username}</p>
                     <p>Title: {msg.title}</p>
@@ -62,7 +74,8 @@ export default function MsgCard({ arr, home }) {
                         <button onClick={() => handleVote(msg._id, true)}>Like</button>
                         <button onClick={() => handleVote(msg._id, false)}>Dislike</button>
                     </div>
-                    <button onClick={() => toggle(msg)} display={myUser._id === msg.author._id || myUser._id === msg.author ? 'none' : 'block'}>edit?</button>
+                    <button onClick={() => toggle(msg)} display={myUser._id === authorID ? 'none' : 'block'}>edit?</button>
+                    <button display={myUser._id === authorID ? "block" : 'none'} >Delete?</button>
                     <CommentForm postID={msg._id} />
                     <PopComments postID={msg._id} />
                 </div>

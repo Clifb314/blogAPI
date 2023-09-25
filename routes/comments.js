@@ -8,7 +8,7 @@ router.get('/', commentController.allComments)
 
 
 //Create comment
-router.post('/create', commentController.createComment)
+router.post('/:postID/create', commentController.createComment)
 
 //Edit comment
 router.put('/:commentID/edit', commentController.editComment)

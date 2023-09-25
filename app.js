@@ -65,13 +65,25 @@ passport.use(new JWTStrat(options, function(payload, done) {
   //})
 }))
 
+//middleware to get token from header
+app.use(function(req, res, next) {
+  const bearHead = req.headers.authorization
+  if (bearHead) {
+    const bear = bearHead.split(' ')
+    req.token = bear[1]
+  }
+  next()
+})
+
+
+
 //routes
 const usersRouter = require('./routes/users')
 const postsRouter = require('./routes/posts')
 const commentsRouter = require('./routes/comments')
 
 app.use('/api/posts', postsRouter);
-app.use('/api/comments/:postID/', commentsRouter)
+app.use('/api/comments', commentsRouter)
 app.use('/api/users', usersRouter);
 
 // catch 404 and forward to error handler

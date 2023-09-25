@@ -14,6 +14,6 @@ export default async function Posts({ user, sorting, noti }) {
 
 
     return (
-        <MsgCard arr={posts} />
+        <MsgCard arr={posts} noti={noti} />
     )
 }

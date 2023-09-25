@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import UserService from "../utils/dataAccess";
 import auth from "../utils/auth";
-
+import { uuid } from "uuidv4";
 
 export default async function PopComments({ postID }) {
     const [ show, setShow ] = useState(false)
@@ -33,13 +33,15 @@ export default async function PopComments({ postID }) {
     }
 
     const display = comments.map(comm => {
+        const key = uuid()
         return (
-            <div className="commOut">
+            <div className="commOut" key={key}>
                 <div className="commCard" display={editting ? 'none' : 'block'}>
                     <p>{comm.author}</p>
                     <p>{comm.content}</p>
                     <p>{comm.easyDate}</p>
                     <button onClick={() => handleClick(comm)} display={myUser._id === comm.author._id ? 'block' : 'none'}>Edit?</button>
+                    <button display={myUser_.id === comm.author._id ? 'block' : 'none'}>Delete?</button>
                 </div>
                 <div display={editting ? 'block' : 'none'}>
                     <form>
