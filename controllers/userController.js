@@ -4,7 +4,6 @@ const bcrypt = require("bcryptjs");
 const User = require("../models/userModel");
 const { body, validationResult } = require("express-validator");
 const jwt = require("jsonwebtoken");
-const asyncHandler = require("express-async-handler");
 
 //Get all users
 exports.allUsers = async function (req, res, next) {
@@ -12,6 +11,11 @@ exports.allUsers = async function (req, res, next) {
     {},
     { _password: 0, _id: 0, email: 0, status: 0 }
   )
+    .populate({
+      path: "messages",
+      select: "-likes",
+      populate: "comments",
+    })
     .sort({ username: 1 })
     .exec();
 
@@ -72,7 +76,7 @@ exports.signup = [
     .escape()
     .isEmail()
     .withMessage("Please enter valid email"),
-  body("password").trim().escape()
+  body("password").trim().escape(),
   // .isStrongPassword({
   //   minLength: 8,
   //   minLowercase: 1,
@@ -81,7 +85,6 @@ exports.signup = [
   //   minSymbols: 1,
   // })
   // .withMessage("Please review password requirements")
-  ,
   body("checkPW")
     .trim()
     .escape()
@@ -192,7 +195,7 @@ exports.myHome = [
       return res
         .status(401)
         .json({ error: "Must be logged in to access this page" });
-    const myUser = await User.findById(myID, '-_password')
+    const myUser = await User.findById(myID, "-_password")
       .populate({
         path: "messages",
         sort: { date: -1 },
@@ -209,54 +212,53 @@ exports.editSelf = [
   //validate token
   (req, res, next) => {
     jwt.verify(req.token, process.env.SECRET, (err, decoded) => {
-      if (err) return res.status(401).json(err)
-      req.decoded = decoded
-      next()
-    })
+      if (err) return res.status(401).json(err);
+      req.decoded = decoded;
+      next();
+    });
   },
   //sanitize input
   body("username", "Username must be at least 3 characters")
-  .trim()
-  .escape()
-  .isLength({ min: 3 })
-  .isAlphanumeric()
-  .withMessage("Username: No Special Characters"),
-body("email")
-  .trim()
-  .escape()
-  .isEmail()
-  .withMessage("Please enter valid email"),
-body("password").trim().escape()
-// .isStrongPassword({
-//   minLength: 8,
-//   minLowercase: 1,
-//   minUppercase: 1,
-//   minNumbers: 1,
-//   minSymbols: 1,
-// })
-// .withMessage("Please review password requirements")
-,
-body("checkPW")
-  .trim()
-  .escape()
-  .custom(async (value, { req }) => {
-    if (value !== req.body.password) {
-      throw new Error("Passwords must match");
-    }
-    return true;
-  }),
+    .trim()
+    .escape()
+    .isLength({ min: 3 })
+    .isAlphanumeric()
+    .withMessage("Username: No Special Characters"),
+  body("email")
+    .trim()
+    .escape()
+    .isEmail()
+    .withMessage("Please enter valid email"),
+  body("password").trim().escape(),
+  // .isStrongPassword({
+  //   minLength: 8,
+  //   minLowercase: 1,
+  //   minUppercase: 1,
+  //   minNumbers: 1,
+  //   minSymbols: 1,
+  // })
+  // .withMessage("Please review password requirements")
+  body("checkPW")
+    .trim()
+    .escape()
+    .custom(async (value, { req }) => {
+      if (value !== req.body.password) {
+        throw new Error("Passwords must match");
+      }
+      return true;
+    }),
   body("oldPW").trim().escape(),
 
   async (req, res, next) => {
-    const myID = req.decoded._id
-    console.log({id: myID, decoded: req.decoded})
-    if (!myID) return res.status(401).json({error: 'Access denied'})
-    const myUser = await User.findById(myID).exec()
-    if (!myUser) return res.status(400).json({err: 'User not found'})
-    const { username, email, password, oldPW } = req.body
-    console.log(myUser)
-    console.log(oldPW)
-    const match = await bcrypt.compare(oldPW, myUser._password)
+    const myID = req.decoded._id;
+    console.log({ id: myID, decoded: req.decoded });
+    if (!myID) return res.status(401).json({ error: "Access denied" });
+    const myUser = await User.findById(myID).exec();
+    if (!myUser) return res.status(400).json({ err: "User not found" });
+    const { username, email, password, oldPW } = req.body;
+    console.log(myUser);
+    console.log(oldPW);
+    const match = await bcrypt.compare(oldPW, myUser._password);
     //   callback in bcrypt.compare seemed to be causing some issue/error
     //   function(err, result) {
     //   if (err) return res.status(400).json({message: 'Error accessing database', error: err, result})
@@ -264,18 +266,24 @@ body("checkPW")
     //   else console.log(result)
     // }
 
-    if (!match) return res.status(401).json({err: 'Access denied. Incorrect Password'})
+    if (!match)
+      return res.status(401).json({ err: "Access denied. Incorrect Password" });
 
     bcrypt.hash(password, 10, async (err, hash) => {
-      if (err) return next(err)
+      if (err) return next(err);
       const editedUser = {
         ...myUser,
         username,
         email,
         _password: hash,
-      }
-      const edit = await User.findByIdAndUpdate(myID, editedUser, {new: true}).exec()
-      return res.json({message: `${username} editted successfully`, user: edit})
-    })
-  }
-]
+      };
+      const edit = await User.findByIdAndUpdate(myID, editedUser, {
+        new: true,
+      }).exec();
+      return res.json({
+        message: `${username} editted successfully`,
+        user: edit,
+      });
+    });
+  },
+];

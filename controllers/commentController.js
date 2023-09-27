@@ -29,7 +29,7 @@ exports.createComment = [
     .escape(),
 
   async (req, res) => {
-    const decoded = jwt.verify(req.token, process.env.SECRET, {issuer: 'CB'})
+    const decoded = jwt.verify(req.token, process.env.SECRET, { issuer: "CB" });
     const errors = validationResult(req.body);
     //will pass parent post ID as a hidden input
     //NO get author from token, get parent from params
@@ -53,23 +53,20 @@ exports.createComment = [
 
 exports.editComment = [
   //validate token
-  (req, res) => {jwt.verify(
-    req.token,
-    process.env.SECRET,
-    { issuer: "CB" },
-    function (err, decoded) {
-      if (err) return res.status(400).json(err);
-      req.decoded = decoded;
-      next();
-    }
-  )},
+  (req, res) => {
+    jwt.verify(
+      req.token,
+      process.env.SECRET,
+      { issuer: "CB" },
+      function (err, decoded) {
+        if (err) return res.status(400).json(err);
+        req.decoded = decoded;
+        next();
+      }
+    );
+  },
 
   //validate input
-  body("author")
-    .trim()
-    .isLength({ min: 1 })
-    .withMessage("Username is required")
-    .escape(),
   body("content")
     .trim()
     .isLength({ min: 1 })
@@ -78,7 +75,6 @@ exports.editComment = [
 
   async (req, res, next) => {
     const errors = validationResult(req.body);
-    //will pass date, parent, id as hidden inputs
     //parent can also come from req.params.postID
     const { author, content, date, parent, id } = req.body;
 
@@ -89,18 +85,22 @@ exports.editComment = [
     //   date,
     //   parent,
     // };
-    const newComment = await Comment.findByIdAndUpdate(id, {content: content}, {
-      new: true,
-    }).exec();
+    const newComment = await Comment.findByIdAndUpdate(
+      id,
+      { content: content },
+      {
+        new: true,
+      }
+    ).exec();
     return res.json(newComment);
   },
 ];
 
 exports.deleteComment = async (req, res, next) => {
-  const myComment = await Comment.findByIdAndRemove(req.params.commentID)
-  if (!myComment) return res.status(400).json({error: 'Comment not found'})
+  const myComment = await Comment.findByIdAndRemove(req.params.commentID);
+  if (!myComment) return res.status(400).json({ error: "Comment not found" });
 
-  return res.json({ message: `Comment (id: ${myComment._id}) deleted` });;
+  return res.json({ message: `Comment (id: ${myComment._id}) deleted` });
 };
 
 exports.commentDetail = async (req, res) => {

@@ -3,12 +3,13 @@ const router = express.Router()
 const commentController = require('../controllers/commentController')
 
 // /comments/:postID/
-//All comments
-router.get('/', commentController.allComments)
-
 
 //Create comment
-router.post('/:postID/create', commentController.createComment)
+router.post('/msg/:postID/create', commentController.createComment)
+
+//All comments of a post
+router.get('/msg/:postID/', commentController.allComments)
+
 
 //Edit comment
 router.put('/:commentID/edit', commentController.editComment)
