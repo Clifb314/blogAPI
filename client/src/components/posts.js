@@ -3,16 +3,18 @@ import UserService from "../utils/dataAccess";
 import MsgCard from "./msgCard";
 
 export default function Posts({ user, sorting, noti }) {
-  let posts;
 
   useEffect(() => {
-    if (sorting === "recent") {
-      posts = UserService.getAllPosts();
-    } else posts = UserService.getTopPosts();
-  
-    if (posts.err) noti("failure", posts.err);
-    else noti("success", "Posts loaded");
-      
+    let posts
+    const getPosts = async () => {
+      if (sorting === "recent") {
+        posts = await UserService.getAllPosts();
+      } else posts = await UserService.getTopPosts();
+    
+      if (posts.err) noti("failure", posts.err);
+      else noti("success", "Posts loaded");
+    }
+    getPosts()      
   }, [])
 
   const display = posts.map((post) => {

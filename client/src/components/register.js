@@ -19,11 +19,11 @@ export default function Register({ noti }) {
     });
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     const form = new FormData(e.target);
 
-    const response = auth.register(form);
+    const response = await auth.register(form);
 
     if (response.err) noti("failure", response.err);
     else noti("success", response.message);

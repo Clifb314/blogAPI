@@ -5,9 +5,9 @@ export default function Login({ noti }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    const response = Auth.login(username, password);
+    const response = await Auth.login(username, password);
     if (response.err) noti("failure", response.err);
     else noti("success", response.message);
   }

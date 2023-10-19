@@ -5,16 +5,11 @@ import auth from "../utils/auth";
 export default function CommentForm({ postID }) {
   const [show, setShow] = useState(false);
 
-  useEffect(() => {
-    const user = auth.getUser();
-  }, [])
-
-
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     setShow(false);
     const form = new FormData(e.target);
-    const result = UserService.postComment(postID, form);
+    const result = await UserService.postComment(postID, form);
   }
 
   function toggle() {

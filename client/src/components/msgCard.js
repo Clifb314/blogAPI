@@ -21,11 +21,11 @@ export default function MsgCard({ post, noti }) {
     }
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     toggle();
     const form = new FormData(e.target);
-    const result = UserService.editPost(post._id, form);
+    const result = await UserService.editPost(post._id, form);
     if (result.err) console.log(result.err);
     else console.log(result);
   }
@@ -38,9 +38,9 @@ export default function MsgCard({ post, noti }) {
     });
   }
 
-  function handleVote(up) {
+  async function handleVote(up) {
     e.disabled = true;
-    const result = UserService.likePost(post._id, up);
+    const result = await UserService.likePost(post._id, up);
     console.log(result);
   }
 

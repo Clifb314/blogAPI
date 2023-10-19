@@ -6,9 +6,11 @@ export default function UsersPage({ user, noti }) {
 
 //only run on mount
   useEffect(() => {
-    const allUsers = UserService.getAllUsers();
-    if (allUsers.err) noti("failure", allUsers.err);
-    else noti("success", "Users loaded");
+    const fetchUsers = async () => {
+      const allUsers = await UserService.getAllUsers();
+      if (allUsers.err) noti("failure", allUsers.err);
+      else noti("success", "Users loaded");
+    }
   }, [])
 
 

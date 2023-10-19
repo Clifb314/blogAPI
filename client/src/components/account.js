@@ -8,8 +8,15 @@ export default function AccountPage({ user, noti }) {
 
 
   useEffect(() => {
-    const myUser = UserService.getUserHome();
-    setUserInfo(myUser)
+    const checkUser = async () => {
+      try {
+        const myUser = await UserService.getUserHome();
+        setUserInfo(myUser)    
+      } catch {
+        setUserInfo(null)
+      }
+      checkUser()
+    }
   }, [])
 
 

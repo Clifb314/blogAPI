@@ -8,9 +8,12 @@ export default function PostDetail() {
   const postID = useParams().postID;
 
   useEffect(() => {
-    const post = UserService.getPostDetail(postID);
-    if (post.err)
-    return navi("/error", { state: { source: "Posts", err: post.err } });
+    const posts = async () => {
+      const post = await UserService.getPostDetail(postID);
+      if (post.err)
+      return navi("/error", { state: { source: "Posts", err: post.err } });  
+    }
+    post()
   //maybe add an error page to return
   }, [])
 

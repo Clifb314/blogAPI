@@ -7,7 +7,10 @@ export default function UserDetail({ noti }) {
   const userID = useParams().userID;
 
   useEffect(() => {
-    const user = UserService.getUserPage(userID);
+    const fetchUser = async () => {
+      const user = await UserService.getUserPage(userID);
+    }
+    fetchUser()
   }, [])
 
 

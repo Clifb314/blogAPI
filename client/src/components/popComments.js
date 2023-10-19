@@ -27,18 +27,18 @@ export default async function PopComments({ comment }) {
   }
 
   //finish submit/delete pls
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     const form = new FormData(e.target);
-    const result = UserService.editComment(comment._id, form);
+    const result = await UserService.editComment(comment._id, form);
     if (result.err) {
       navi("/error", { state: { source: "Comments", err: result.err } });
     }
     //error handling
   }
 
-  function handleDelete() {
-    const result = UserService.delComment(comment._id);
+  async function handleDelete() {
+    const result = await UserService.delComment(comment._id);
     if (result.err) {
       navi("/error", { state: { source: "Comments", err: result.err } });
     }
