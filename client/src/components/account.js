@@ -1,12 +1,17 @@
-import React, { useState } from "react";
-import auth from "../utils/auth";
+import React, { useEffect, useState } from "react";
 import UserService from "../utils/dataAccess";
 
 export default function AccountPage({ user, noti }) {
-  const myID = auth.getUser()._id;
-  const myUser = UserService.getUserHome();
-  const [userInfo, setUserInfo] = useState(myUser);
+
+  const [userInfo, setUserInfo] = useState(null);
   const [editting, setEditting] = useState(false);
+
+
+  useEffect(() => {
+    const myUser = UserService.getUserHome();
+    setUserInfo(myUser)
+  }, [])
+
 
   function handleChange(e) {
     const { value, name } = e.target;
@@ -33,6 +38,8 @@ export default function AccountPage({ user, noti }) {
   }
 
   return (
+    userInfo === null ? <p>Must be logged in to access this page</p> 
+    :
     <div>
       <form onSubmit={handleSubmit}>
         <label htmlFor="username">Username: </label>

@@ -1,10 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import UserService from "../utils/dataAccess";
 
 export default function UsersPage({ user, noti }) {
-  const allUsers = UserService.getAllUsers();
-  if (allUsers.err) noti("failure", allUsers.err);
-  else noti("success", "Users loaded");
+
+
+//only run on mount
+  useEffect(() => {
+    const allUsers = UserService.getAllUsers();
+    if (allUsers.err) noti("failure", allUsers.err);
+    else noti("success", "Users loaded");
+  }, [])
+
+
 
   const display = allUsers.map((user) => {
     return (

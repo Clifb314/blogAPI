@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import UserService from "../utils/dataAccess";
 import { useNavigate, useParams } from "react-router-dom";
 import PopComments from "./popComments";
@@ -7,11 +7,14 @@ export default function PostDetail() {
   const navi = useNavigate();
   const postID = useParams().postID;
 
-  const post = UserService.getPostDetail(postID);
-
-  if (post.err)
+  useEffect(() => {
+    const post = UserService.getPostDetail(postID);
+    if (post.err)
     return navi("/error", { state: { source: "Posts", err: post.err } });
   //maybe add an error page to return
+  }, [])
+
+
 
   const comments = post.comments.map((comment) => {
     return <PopComments comment={comment} />;

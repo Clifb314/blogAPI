@@ -53,7 +53,8 @@ class Auth {
   }
 
   getUser() {
-    return JSON.parse(localStorage.getItem("user"));
+    const output = JSON.parse(localStorage.getItem("user"))
+    return !output ? null : output;
   }
 }
 

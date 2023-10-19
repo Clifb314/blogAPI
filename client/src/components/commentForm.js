@@ -1,11 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import UserService from "../utils/dataAccess";
 import auth from "../utils/auth";
 
 export default function CommentForm({ postID }) {
   const [show, setShow] = useState(false);
 
-  const user = auth.getUser();
+  useEffect(() => {
+    const user = auth.getUser();
+  }, [])
+
 
   function handleSubmit(e) {
     e.preventDefault();

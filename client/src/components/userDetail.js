@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import UserService from "../utils/dataAccess";
 import { useParams } from "react-router-dom";
 import MsgCard from "./msgCard";
@@ -6,7 +6,10 @@ import MsgCard from "./msgCard";
 export default function UserDetail({ noti }) {
   const userID = useParams().userID;
 
-  const user = UserService.getUserPage(userID);
+  useEffect(() => {
+    const user = UserService.getUserPage(userID);
+  }, [])
+
 
   if (user.err) noti("failure", user.err);
   else {

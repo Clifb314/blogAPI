@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {BrowserRouter, Routers, Route, Routes, Navigate} from 'react-router-dom'
 import Header from './components/header'
 import Bubble from './components/bubble'
@@ -12,6 +12,7 @@ import ToastContainer from './components/toastCont'
 import Register from './components/register'
 import UserDetail from './components/userDetail'
 import ErrorPage from './components/errorPage'
+import PostDetail from './components/msgDetail'
 import {uuid} from 'uuidv4'
 
 
@@ -21,6 +22,12 @@ export default function Main() {
     //const [ login, setLogin ] = useState(false)
     const [ user, setUser ] = useState(null)
     const [noti, setNoti] = useState([])
+
+
+    useEffect(() => {
+        const myUser = auth.getUser()
+        setUser(myUser)
+    })
 
     function clearNoti() {
         setNoti([])
@@ -54,8 +61,9 @@ export default function Main() {
                     <Route path='/users' element={<UsersPage user={user} noti={newNoti} />} />
                         <Route path='/:userID' element={<UserDetail noti={newNoti} />} />
                     <Route path='/posts' element={<Posts user={user} sorting='recent' noti={newNoti} />} />
-                        <Route path='/top' element={<Posts user={user} sorting='top'/>} noti={newNoti} />
+                        <Route path='/top' element={<Posts user={user} sorting='top' noti={newNoti}/>} />
                         {/* message detail page */}
+                        <Route path='/:postID' element={<PostDetail />} />
                             {/* comment detail page */}
                     <Route path='/login' element={<Login noti={newNoti} />} />
                     <Route path='/register' element={<Register noti={newNoti} />} />

@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 
 export default function ErrorPage({ errs }) {
-  const [displayErr, setDisplayErr] = {};
+  const [displayErr, setDisplayErr] = useState({});
 
   const location = useLocation();
   const state = location.state;
 
   //errs should be an object with
-  // err: the error, source: the component who passed the error
+  //err: the error, source: the component who passed the error
   //useLocation to get err object from useNavigate
 
   if (state.err) {

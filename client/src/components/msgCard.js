@@ -51,14 +51,21 @@ export default function MsgCard({ post, noti }) {
       noti("success", "Post deleted");
     }
   }
+
+  function toggleComments() {
+    !showComments ? setShowComments(true) : setShowComments(false)
+  }
+
   const comments = post.comments.map((comment) => {
     return <PopComments comment={comment} />;
   });
 
   const displayComments = showComments ? (
-    comments
+    <div>{comments}
+      <p onClick={toggleComments}>hide comments</p>
+    </div>
   ) : (
-    <p className="commLink">Show {post.comments.length + 1} comments...</p>
+    <p onClick={toggleComments} className="commLink">Show {post.comments.length + 1} comments...</p>
   );
   const authorID = post.author._id ? post.author._id : post.author;
   const key = uuid();
