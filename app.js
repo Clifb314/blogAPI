@@ -8,7 +8,6 @@ require('dotenv').config()
 
 //mongoose
 const mongoose = require('mongoose');
-const { ExtractJwt } = require('passport-jwt');
 //connection setup
 const mongoDB = process.env.MONGODB
 mongoose.connect(mongoDB, {useUnifiedTopology: true, useNewUrlParser: true})
