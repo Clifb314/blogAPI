@@ -4,16 +4,22 @@ import { useNavigate, useParams } from "react-router-dom";
 import PopComments from "./popComments";
 
 export default function PostDetail() {
+  const [post, setPost] = useState(null)
   const navi = useNavigate();
   const postID = useParams().postID;
 
   useEffect(() => {
     const posts = async () => {
-      const post = await UserService.getPostDetail(postID);
+      const open = await UserService.getPostDetail(postID);
       if (post.err)
       return navi("/error", { state: { source: "Posts", err: post.err } });  
+      setPost(open)
     }
-    post()
+    posts()
+
+    return () => {
+      setPost(null)
+    }
   //maybe add an error page to return
   }, [])
 

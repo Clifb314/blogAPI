@@ -12,12 +12,12 @@ exports.showPosts = async function (req, res, next) {
     })
     .populate({
       path: "comments",
-      select: "author comment parent",
       populate: {
         path: "author",
-        select: "username",
+        model: 'userModel',
+        select: 'username'
       },
-      perDocumentLimit: 3,
+      perDocumentLimit: 5,
     })
     .sort({ date: -1 })
     .limit(15)
@@ -37,7 +37,7 @@ exports.topPosts = async function (req, res, next) {
     })
     .populate({
       path: "comments",
-      select: "author comment parent",
+      select: "author content date parent",
       populate: {
         path: "author",
         select: "username",
@@ -173,7 +173,7 @@ exports.likePost = async (req, res, next) => {
 
   if (post === null) return res.json({ error: `Failed to like post` });
 
-  return res.json({ post, message: "Like sent" });
+  else return res.json({ post, message: "Like sent" });
 };
 
 exports.dislikePost = async (req, res, next) => {

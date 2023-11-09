@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 import UserService from "../utils/dataAccess";
 import auth from "../utils/auth";
-import { uuid } from "uuidv4";
+import {v4 as uuidv4} from 'uuid'
 import { useNavigate } from "react-router-dom";
 
-export default async function PopComments({ comment }) {
+export default function PopComments({ comment, user }) {
   const [editting, setEditting] = useState(false);
   const [openComment, setOpenComment] = useState("");
-  const myUser = auth.getUser();
   const navi = useNavigate();
 
   //const comments = await UserService.getComments(postID)
@@ -33,6 +32,7 @@ export default async function PopComments({ comment }) {
     const result = await UserService.editComment(comment._id, form);
     if (result.err) {
       navi("/error", { state: { source: "Comments", err: result.err } });
+      return;
     }
     //error handling
   }
@@ -41,30 +41,31 @@ export default async function PopComments({ comment }) {
     const result = await UserService.delComment(comment._id);
     if (result.err) {
       navi("/error", { state: { source: "Comments", err: result.err } });
+      return;
     }
     //error handling
   }
 
   return (
-    <div className="commOut" key={uuid()}>
-      <div className="commCard" display={editting ? "none" : "block"}>
-        <p>{comment.author}</p>
+    <div className="commOut" key={uuidv4()}>
+      <div className="commCard" hidden={editting ? true : false}>
+        <p><em>{comment.author.username}</em></p>
         <p>{comment.content}</p>
-        <p>{comment.easyDate}</p>
+        <p className="postDate">{new Date(comment.date).toLocaleString()}</p>
         <button
           onClick={handleClick}
-          display={myUser._id === comment.author._id ? "block" : "none"}
+          hidden={user === comment.author._id ? false : true}
         >
           Edit?
         </button>
         <button
           onClick={handleDelete}
-          display={myUser_.id === comment.author._id ? "block" : "none"}
+          hidden={user === comment.author._id ? false : true}
         >
           Delete?
         </button>
       </div>
-      <div display={editting ? "block" : "none"}>
+      <div hidden={editting ? false : true}>
         <form onSubmit={handleSubmit}>
           <label htmlFor="content">
             Comment:{" "}

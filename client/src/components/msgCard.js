@@ -1,15 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PopComments from "./popComments";
 import CommentForm from "./commentForm";
 import auth from "../utils/auth";
 import UserService from "../utils/dataAccess";
-import { uuid } from "uuidv4";
+import {v4 as uuidv4} from 'uuid'
 
-export default function MsgCard({ post, noti }) {
+export default function MsgCard({ post, user, noti }) {
   const [editting, setEditting] = useState(false);
   const [openMsg, setOpenMsg] = useState({});
   const [showComments, setShowComments] = useState(false);
-  const myUser = auth.getUser();
 
   function toggle() {
     if (editting) {
@@ -38,7 +37,7 @@ export default function MsgCard({ post, noti }) {
     });
   }
 
-  async function handleVote(up) {
+  async function handleVote(e, up) {
     e.disabled = true;
     const result = await UserService.likePost(post._id, up);
     console.log(result);
@@ -54,59 +53,67 @@ export default function MsgCard({ post, noti }) {
 
   function toggleComments() {
     !showComments ? setShowComments(true) : setShowComments(false)
+    
   }
-
-  const comments = post.comments.map((comment) => {
-    return <PopComments comment={comment} />;
-  });
+  
+  const allComments = post.comments.length > 0 ? post.comments.map(comment => {
+    return <PopComments comment={comment} user={user} />
+  }) :  <p>*crickets*</p>
 
   const displayComments = showComments ? (
-    <div>{comments}
-      <p onClick={toggleComments}>hide comments</p>
+    <div>{allComments}
+      <p className="toggleCom" onClick={toggleComments}>hide comments</p>
     </div>
   ) : (
-    <p onClick={toggleComments} className="commLink">Show {post.comments.length + 1} comments...</p>
+    <p className='toggleCom' onClick={toggleComments}>Show {post.comments.length} comment(s)...</p>
   );
   const authorID = post.author._id ? post.author._id : post.author;
-  const key = uuid();
+  const key = uuidv4();
   return (
     <div className="msgDiv" key={key}>
-      <div className="msgCard" display={editting ? "none" : "block"}>
-        <p>Author: {post.author.username}</p>
-        <p>Title: {post.title}</p>
-        <p>Post: {post.content}</p>
-        <p>Date: {post.easyDate}</p>
-        <p>Likes: {post.countLikes}</p>
-        <p>Comments: {post.countComments}</p>
-        <div
-          className="votes"
-          display={myUser._id === authorID ? "none" : "block"}
-        >
-          <button onClick={() => handleVote(true)}>Like</button>
-          <button onClick={() => handleVote(false)}>Dislike</button>
+      <div className="msgCard" hidden={editting ? true : false}>
+        <p><span className="username"><em>{post.author.username}</em></span></p>
+        <p><span className="title">{post.title}</span></p>
+        <p className="postP"><span className="postContent">{post.content}</span></p>
+        <div className="postDate">
+          <p>Date : {new Date(post.date).toLocaleString()}</p>
+          <p>Likes : {post.likes.length}</p>
         </div>
-        <button
-          onClick={toggle}
-          display={myUser._id === authorID ? "none" : "block"}
-        >
-          edit?
-        </button>
-        <button
-          onClick={handleDelete}
-          display={myUser._id === authorID ? "block" : "none"}
-        >
-          Delete?
-        </button>
-        <CommentForm postID={post._id} />
-        {displayComments}
-      </div>
-      <div className="msgForm" display={editing ? "block" : "none"}>
+        <div className="commentTogs">
+          <CommentForm postID={post._id} user={user} />
+          {displayComments}
+        </div>
+        <div className="postControls">
+          <div
+            className="votes"
+            hidden={user === authorID ? true : false}
+          >
+            <button onClick={(e) => handleVote(e, true)}>Like</button>
+            <button onClick={(e) => handleVote(e, false)}>Dislike</button>
+          </div>
+          <div className="userbtns">
+            <button
+              onClick={toggle}
+              hidden={user === authorID ? false : true}
+            >
+              edit?
+            </button>
+            <button
+              onClick={handleDelete}
+              hidden={user === authorID ? false : true}
+            >
+              Delete?
+            </button>
+          </div>
+                </div>
+        </div>
+      <div className="msgForm" hidden={editting ? false : true}>
         <form onSubmit={handleSubmit}>
           <label htmlFor="title">Title: </label>
-          <input name="title" value={msg.title} onChange={handleChange} />
+          <input name="title" value={openMsg.title} onChange={handleChange} />
           <textarea
             name="content"
-            value={msg.content}
+            value={openMsg.content}
             onChange={handleChange}
           />
           <button type="submit">submit</button>

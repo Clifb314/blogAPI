@@ -7,7 +7,7 @@ export default function Bubble({ user }) {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   //hide/show form onclick
-  function toggleMsgForm() {
+  function toggleMsgForm(e) {
     display ? setDisplay(false) : setDisplay(true);
     e.target.class = "bubbleCont open";
   }
@@ -29,7 +29,7 @@ export default function Bubble({ user }) {
 
   return (
     <div className="bubbleCont" onClick={toggleMsgForm}>
-      <div className="msgBubble" display={display ? "none" : "block"}>
+      <div className="msgBubble" hidden={!display ? true : false}>
         <form
           id="msgForm"
           method="POST"

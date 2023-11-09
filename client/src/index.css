@@ -25,7 +25,7 @@
 *,
 *::before,
 *::after {
-  box-sizing: inherit;
+  box-sizing: border-box;
 }
 
 body {
@@ -37,6 +37,14 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+body, div#app, div#content {
+  height: 100vh;
+}
+
+label {
+  display: inline-block;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
@@ -44,7 +52,7 @@ code {
 
 /* Main */
 
-div.content {
+div#content {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -53,15 +61,132 @@ div.content {
 div.header {
   width: 100%;
   height: 10vh;
+  border-bottom: 2px solid black;
 }
 
 div.header li {
   list-style: none;
+  display: inline-block;
+  margin: 5px;
+}
+
+div.homepage {
+  flex: 1;
+}
+
+
+/* Posts pages */
+.postView {
+  flex: 1;
+  padding: 4px 20px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 300px));
+  gap: 12px;
+}
+
+.msgCard {
+  padding: 6px;
+  text-align: left;
+  background-color: azure;
+}
+
+.msgCard p {
+  margin: 4px;
+}
+
+p.toggleCom, p.toggleResp {
+  font-size: 12px;
+  font-style: italic;
+  cursor: pointer;
+  display: inline-block;
+  transition: all ease 100ms;
+}
+
+p.toggleCom:hover, p.toggleResp:hover {
+  color: red;
+  text-decoration: underline;
+}
+
+div.votes button, div.userbtns button, div.comControl button {
+  border-radius: 10px;
+  margin: 1px 4px;
+  padding: 2px 0px;
+  cursor: pointer;
+  width: 60px;
+  border: 1px solid black;
+  transition: all ease-in-out 100ms;
+}
+
+button:hover {
+  background-color: rgb(105, 105, 243);
+  color: white;
+  border: 1px solid white;
+}
+
+
+div.postControls {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+div.votes {
+  flex: 1;
+  display: flex;
+  justify-content: space-evenly;
+}
+
+div.postDate p, p.postDate {
+  font-size: 10px;
+  text-align: right;
+}
+
+span.postContent {
+  display: block;
+  border-top: 1px solid black;
+  margin-bottom: 8px;
+}
+
+span.title {
+  font-weight: 700;
+}
+
+/* Comments */
+.comLabel {
+  display: block;
+}
+
+div.commCard {
+  font-size: 12px;
 }
 
 
 
+/* Bubble */
+div.bubbleCont {
+  z-index: 5;
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  border-radius: 50%;
+  width: 15px;
+  height: 15px;
+  background-color: red;
+}
 
+div.msgBubble {
+  position: absolute;
+  border: 1px solid black;
+  right: 25px;
+  bottom: 25px;
+  background-color: aqua;
+  padding: 6px;
+}
+
+div.msgBubble input {
+  width: 75%;
+  margin: 4px;
+}
 
 /* Toast notification styling */
 

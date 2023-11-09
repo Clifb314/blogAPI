@@ -4,18 +4,23 @@ import { useParams } from "react-router-dom";
 import MsgCard from "./msgCard";
 
 export default function UserDetail({ noti }) {
+  const [ user, setUser] = useState(null)
   const userID = useParams().userID;
 
   useEffect(() => {
     const fetchUser = async () => {
       const user = await UserService.getUserPage(userID);
+      if (user.err) {
+        noti('failure', user.err)
+        return
+      } else {
+        setUser(user)
+      }
     }
     fetchUser()
   }, [])
 
 
-  if (user.err) noti("failure", user.err);
-  else {
     const display = (
       <div>
         <p>Username: {user.username}</p>
@@ -29,15 +34,14 @@ export default function UserDetail({ noti }) {
         </div>
       </div>
     );
-  }
 
-  return !user.err ? (
-    { display }
-  ) : (
+  return !user ? (
     <div>
-      <p>There's nothing here...</p>
-      <p>User not found or problem accessing database</p>
-      <p>Error: {user.err}</p>
-    </div>
+    <p>There's nothing here...</p>
+    <p>User not found or problem accessing database</p>
+    <p>Error: {user.err}</p>
+  </div>
+  ) : (
+        { display }
   );
 }

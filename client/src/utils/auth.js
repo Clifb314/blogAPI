@@ -1,6 +1,3 @@
-import { localsName } from "ejs";
-import ToastContainer from "../components/toastCont";
-
 const url = "http://localhost:5000/api/";
 
 class Auth {
@@ -14,14 +11,18 @@ class Auth {
           username,
           password,
         },
+        headers: {
+          'Content-Type': 'application/json'
+      }
       });
       if (!response.ok) {
         throw new Error("Error accessing database");
       } else {
-        localStorage.setItem("user", JSON.stringify(response.data));
-        return { message: "Logged in", data: response.data };
+        console.log(response)
+        localStorage.setItem("user", JSON.stringify(response));
+        return { message: "Logged in", user: response.user };
       }
-    } catch {
+    } catch(error) {
       console.error("Error", error);
       return { err: "Could not access database" };
     }
@@ -46,15 +47,19 @@ class Auth {
       }
       //should register return the user? should it log you in?
       return { message: "Signed up!" };
-    } catch {
+    } catch(error) {
       console.error("Error", error);
       return { err: "Could not access database" };
     }
   }
 
   getUser() {
-    const output = JSON.parse(localStorage.getItem("user"))
-    return !output ? null : output;
+    let output
+    const user = localStorage.getItem("user")
+    console.log(user)
+    if (user) output = user
+    else output = null
+    return output;
   }
 }
 
