@@ -65,6 +65,7 @@ exports.login = function (req, res, next) {
 
 //signup
 exports.signup = [
+  //validator doesn't work with Formdata. So let's change to JSON
   body("username", "Username must be at least 3 characters")
     .trim()
     .escape()
@@ -99,7 +100,8 @@ exports.signup = [
     //validation errors
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.json({ errors: errors.array() });
+      console.log(req.body)
+      return res.status(500).json({ errors: errors.array() });
     }
 
     const { username, email, password, checkPW } = req.body;

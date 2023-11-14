@@ -156,11 +156,20 @@ span.title {
   display: block;
 }
 
-div.commCard {
-  font-size: 12px;
+@keyframes openCom {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
 }
 
-
+div.commCard {
+  font-size: 12px;
+  background-color: rgb(180, 178, 178);
+  animation: openCom var(--toast-speed);
+}
 
 /* Bubble */
 div.bubbleCont {
@@ -174,13 +183,35 @@ div.bubbleCont {
   background-color: red;
 }
 
+div.bubbleCont.open {
+  background-color: blue;
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0%);
+  }
+}
+
 div.msgBubble {
+  font-size: 14px;
+  min-height: 200px;
   position: absolute;
-  border: 1px solid black;
+  border: 2px solid black;
   right: 25px;
   bottom: 25px;
-  background-color: aqua;
-  padding: 6px;
+  background-color: rgb(185, 135, 243);
+  padding: 8px 25px;
+  animation: slide-up var(--toast-speed);
+  box-shadow: 4px 2px 11px 0px rgba(0,0,0,0.83);
+}
+
+div.msgBubble p {
+  font-size: 16px;
+  margin: 8px 4px;
 }
 
 div.msgBubble input {
@@ -188,15 +219,48 @@ div.msgBubble input {
   margin: 4px;
 }
 
+.msgBubble .signInWarning {
+  color: red;
+  font-weight: 700;
+}
+
+/* Registration and login */
+div.register, div.loginDiv {
+  background-color: rgb(144, 224, 231);
+  margin: 25px;
+  border: 1px solid black;
+  box-shadow: gray 0px 1px 3px 0px, rgb(165, 164, 164) 0px 1px 2px 0px;
+}
+
+div.register form, form#loginForm {
+  height: 100%;
+  width: 100%;
+  text-align: left;
+  padding: 6px;
+}
+
+div.register input, #loginForm input {
+  width: 100%;
+}
+
+div.register label, #loginForm label {
+  display: block;
+}
+
 /* Toast notification styling */
 
 .toast {
   background-color: var(--toast-bg-color-fallback);
-  padding: var(--toast-padding);
+  padding: 2px 6px;
   box-shadow: gray 0px 1px 3px 0px, rgb(165, 164, 164) 0px 1px 2px 0px;
   position: relative;
   color: var(--toast-text-color-fallback);
-  opacity: var(--toast-opacity);
+  opacity: 0.7;
+  max-height: 3rem;
+}
+
+.toast p {
+  margin: 6px;
 }
 
 .toast:hover {
@@ -211,6 +275,7 @@ div.msgBubble input {
   display: flex;
   gap: var(--toast-content-gap);
   align-items: top;
+  max-height: 3rem;
 }
 
 .toastBtn {
@@ -225,6 +290,14 @@ div.msgBubble input {
   border: none;
   cursor: pointer;
   color: inherit;
+}
+
+button.closeAll {
+    position: relative;
+    margin: 4px 0px;
+    border-radius: 2px;
+    border: none;
+    animation: slide-out var(--toast-speed);
 }
 
 .type-success {
@@ -257,14 +330,16 @@ div.msgBubble input {
 
 .toast-list {
   position: fixed;
+  text-align: left;
   padding: var(--toast-list-padding);
   width: 100%;
   max-width: var(--toast-list-width);
   max-height: 100vh;
   overflow: hidden auto;
-  bottom: 0;
-  left: 0;
+  bottom: 5px;
+  left: 5px;
   animation: slide-out var(--toast-speed);
+  z-index: 5;
 }
 
 .toast-list .toast {

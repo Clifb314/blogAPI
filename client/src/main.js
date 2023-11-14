@@ -27,12 +27,14 @@ export default function Main() {
   const [user, setUser] = useState(null);
   const [noti, setNoti] = useState([]);
 
+
+  const checkUser = () => {
+    const myUser = auth.getUser();
+    setUser(myUser);    
+}
+
   useEffect(() => {
-    const check = async () => {
-        const myUser = await auth.getUser();
-        setUser(myUser);    
-    }
-    check()
+    checkUser()
   }, []);
 
   function clearNoti() {
@@ -50,7 +52,7 @@ export default function Main() {
       message,
     };
     setNoti([...noti, myNoti]);
-    setTimeout(() => removeNoti(myNoti.id), 5000);
+    setTimeout(() => removeNoti(myNoti.id), 50000);
   }
 
   //routes: homepage, account, other user, all posts
@@ -83,7 +85,7 @@ export default function Main() {
           {/* message detail page */}
           <Route path="/:postID" element={<PostDetail />} />
           {/* comment detail page */}
-          <Route path="/login" element={<Login noti={newNoti} />} />
+          <Route path="/login" element={<Login noti={newNoti} login={checkUser} />} />
           <Route path="/register" element={<Register noti={newNoti} />} />
           {/*Error page*/}
           <Route

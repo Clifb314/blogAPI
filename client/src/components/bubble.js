@@ -8,8 +8,13 @@ export default function Bubble({ user }) {
   const [content, setContent] = useState("");
   //hide/show form onclick
   function toggleMsgForm(e) {
-    display ? setDisplay(false) : setDisplay(true);
-    e.target.class = "bubbleCont open";
+    if (display) {
+      setDisplay(false)
+      //e.target.className = 'bubbleCont'
+    } else {
+      setDisplay(true)
+      //e.target.className = "bubbleCont open";
+    }
   }
 
   function handleSubmit(e) {
@@ -39,13 +44,13 @@ export default function Bubble({ user }) {
         >
           <p>What's on your mind?</p>
           <label htmlFor="title">Title:</label>
-          <input type="text" name="title" onChange={handleChange} />
+          <input type="text" name="title" onChange={handleChange} placeholder="optional" />
           <textarea
             name="content"
             onChange={handleChange}
             placeholder={PLACEHOLDER}
           />
-          <button type="submit" hidden={user ? false : true}></button>
+          <button type="submit" hidden={user ? false : true}>Submit</button>
           <p className="signInWarning" hidden={user ? true : false}>
             Must be signed in to post
           </p>

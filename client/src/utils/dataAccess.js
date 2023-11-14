@@ -127,7 +127,7 @@ class UserService {
     try {
       const response = await fetch(postsURL + "create", {
         method: "POST",
-        mode: "cors",
+        mode: 'cors',
         headers: authHeader(),
         body,
       });

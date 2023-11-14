@@ -5,13 +5,14 @@ import MsgCard from "./msgCard";
 export default function Home({ user, noti }) {
   //Lets display most recent post, total votes, etc for signed in user
   //for guest: explanation of what's viewable, instructions to sign up
-  const [userInfo, setUserInfo] = useState({})
+  const [userInfo, setUserInfo] = useState(null)
   
   useEffect(() => {
     const getUser = async () => {
-      console.log('getting..')
       if (user) {
         const myUser = await UserService.getUserHome()
+        console.log(user)
+        console.log(myUser)
         if (myUser.err) {
           noti('failure', myUser.err)
           return
@@ -26,18 +27,18 @@ export default function Home({ user, noti }) {
       }
     }
     getUser()
+  }, [user])
 
-    return () => {
-      setUserInfo(null)
-    }
-  }, [])
+  const posts = userInfo && userInfo.messages.length > 0 ? userInfo.messages.map(post => <MsgCard post={post} user={user._id} noti={noti} />)
+  : <p>There's nothing here... Try posting something!</p>
+  //const posts = <p>suck a dick</p>
 
   return (
-    user ? 
+    user && userInfo ? 
     <div className="homepage">
     <p>Welcome back, {userInfo.username}!</p>
     <p>Here are you're most recent posts:</p>
-    <MsgCard arr={userInfo.messages} noti={noti} home={true} />
+    {posts}
   </div>
   : 
   <div className="homepage">

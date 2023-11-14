@@ -1,19 +1,26 @@
 import React, { useState } from "react";
 import Auth from "../utils/auth";
 
-export default function Login({ noti }) {
+export default function Login({ noti, login }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   async function handleSubmit(e) {
     e.preventDefault();
-    const response = await Auth.login(username, password);
+    const data = {
+      username,
+      password,
+    }
+    const response = await Auth.login(data);
     if (response.err) noti("failure", response.err);
-    else noti("success", response.message);
+    else {
+      noti("success", response.message);
+      login()
+    }
   }
 
   function handleChange(e) {
-    const { name, value } = e.target.value;
+    const { name, value } = e.target;
     if (name === "username") {
       setUsername(value);
     } else {
@@ -25,12 +32,12 @@ export default function Login({ noti }) {
     <div className="loginDiv">
       <form id="loginForm" onSubmit={handleSubmit}>
         <label htmlFor="username">Username: </label>
-        <input name="username" value={username} onChange={handleChange} />
+        <input name="username" value={username} onChange={handleChange} autoComplete="on" />
         <label htmlFor="password">Password: </label>
-        <input name="password" value={password} onChange={handleChange} />
+        <input name="password" value={password} onChange={handleChange} type="password" />
         <button
           type="submit"
-          disabled={username && password ? "false" : "true"}
+          disabled={username && password ? false : true}
         >
           Log in
         </button>

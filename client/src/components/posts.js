@@ -28,7 +28,7 @@ export default function Posts({ user, sorting, noti }) {
 
   useEffect(() => {
     const getUser = async () => {
-      const fetchUser = await auth.getUser();
+      const fetchUser = auth.getUser();
       console.log(fetchUser)
       if (!fetchUser) return
       else setMyUser(fetchUser._id)

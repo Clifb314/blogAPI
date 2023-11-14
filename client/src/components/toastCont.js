@@ -12,7 +12,7 @@ export default function ToastContainer({ data, onClick, removeAll }) {
     />))
     : ''
 
-  const btn = data.length > 1 ? <button onClick={removeAll}>Close All</button>
+  const btn = data.length > 1 ? <button className="closeAll" onClick={removeAll}>Close All</button>
   : ''
 
 

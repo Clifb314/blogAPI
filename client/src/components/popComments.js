@@ -49,7 +49,7 @@ export default function PopComments({ comment, user }) {
   return (
     <div className="commOut" key={uuidv4()}>
       <div className="commCard" hidden={editting ? true : false}>
-        <p><em>{comment.author.username}</em></p>
+        <p>{comment.author.username}</p>
         <p>{comment.content}</p>
         <p className="postDate">{new Date(comment.date).toLocaleString()}</p>
         <button

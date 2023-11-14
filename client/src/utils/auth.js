@@ -1,16 +1,13 @@
 const url = "http://localhost:5000/api/";
 
 class Auth {
-  async login(username, password) {
+  async login(body) {
     //add in try/catch
     try {
-      const response = fetch(`${url}/users/signin`, {
+      const response = await fetch(`${url}users/login`, {
         method: "POST",
         mode: "cors",
-        body: {
-          username,
-          password,
-        },
+        body: JSON.stringify(body),
         headers: {
           'Content-Type': 'application/json'
       }
@@ -18,9 +15,10 @@ class Auth {
       if (!response.ok) {
         throw new Error("Error accessing database");
       } else {
-        console.log(response)
-        localStorage.setItem("user", JSON.stringify(response));
-        return { message: "Logged in", user: response.user };
+        const data = await response.json()
+        console.log(data)
+        localStorage.setItem("user", JSON.stringify(data));
+        return { message: "Logged in", user: data.user };
       }
     } catch(error) {
       console.error("Error", error);
@@ -37,16 +35,22 @@ class Auth {
     //maybe take checkPW out of express and just validate in react
     //add try/catch block
     try {
-      const response = fetch(`${url}/signup`, {
+      const response = await fetch(`${url}users/signup`, {
         method: "POST",
         mode: "cors",
-        body,
+        body: JSON.stringify(body),
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
       if (!response.ok) {
         throw new Error("Error writing to database");
+      } else {
+        const consoleOut = await response.json()
+        console.log(consoleOut)
+        return { message: "Signed up! Now try logging in" };
       }
       //should register return the user? should it log you in?
-      return { message: "Signed up!" };
     } catch(error) {
       console.error("Error", error);
       return { err: "Could not access database" };
@@ -56,7 +60,6 @@ class Auth {
   getUser() {
     let output
     const user = localStorage.getItem("user")
-    console.log(user)
     if (user) output = user
     else output = null
     return output;

@@ -21,17 +21,16 @@ export default function Register({ noti }) {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    const form = new FormData(e.target);
 
-    const response = await auth.register(form);
+    const response = await auth.register(newUser);
 
     if (response.err) noti("failure", response.err);
     else noti("success", response.message);
   }
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
+    <div className="register">
+      <form id="registerForm" onSubmit={handleSubmit}>
         <label htmlFor="username">Username: </label>
         <input
           name="username"
@@ -44,17 +43,17 @@ export default function Register({ noti }) {
         <input
           type="password"
           name="password"
-          value={newUser.username}
+          value={newUser.password}
           onChange={handleChange}
         />
         <label htmlFor="checkPW">Re-enter Password: </label>
         <input
           type="password"
           name="checkPW"
-          value={newUser.username}
+          value={newUser.checkPW}
           onChange={handleChange}
         />
-        <button type="submit">Submit</button>
+        <button form="registerForm" type="submit">Submit</button>
       </form>
     </div>
   );
