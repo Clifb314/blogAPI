@@ -23,7 +23,6 @@ exports.showPosts = async function (req, res, next) {
     .limit(15)
     .exec();
 
-  console.log(allMessages[1].comments)
   if (allMessages.length < 1)
     return res.json({ error: "No posts found on database" });
 
@@ -102,7 +101,8 @@ exports.createPost = [
       });
       return res.json(newPost);  
     } catch(error) {
-      return res.status(400).json({err: 'Could not update database'})
+      console.error(error)
+      return res.status(400).json({err: 'Could not upload message'})
     }
   },
 ];

@@ -6,7 +6,7 @@ import auth from "../utils/auth";
 
 export default function Posts({ user, sorting, noti }) {
   const [postList, setPostList] = useState([]);
-  const [myUser, setMyUser] = useState(null)
+  const [myUser, setMyUser] = useState(null);
   useEffect(() => {
     const getPosts = async () => {
       let posts;
@@ -27,26 +27,29 @@ export default function Posts({ user, sorting, noti }) {
   useEffect(() => {
     const getUser = async () => {
       const fetchUser = auth.getUser();
-      if (!fetchUser) return
+      if (!fetchUser) return;
       else {
-        const output = await JSON.parse(fetchUser)
-        setMyUser(output.user._id)
+        const output = await JSON.parse(fetchUser);
+        setMyUser(output.user._id);
       }
-    }
-    getUser()
+    };
+    getUser();
 
-    return () => {setMyUser(null)}
-
-  }, [user, sorting])
+    return () => {
+      setMyUser(null);
+    };
+  }, [user, sorting]);
 
   const display =
     postList.length > 0
       ? postList.map((post) => {
-          return <div key={uuidv4()}><MsgCard post={post} noti={noti} user={myUser} /></div>;
+          return (
+            <div key={uuidv4()}>
+              <MsgCard post={post} noti={noti} user={myUser} />
+            </div>
+          );
         })
       : "Database is empty :(";
 
-  return (
-    <div className="postView">{display}</div>
-  )
+  return <div className="postView">{display}</div>;
 }

@@ -19,7 +19,7 @@ import Register from "./components/register";
 import UserDetail from "./components/userDetail";
 import ErrorPage from "./components/errorPage";
 import PostDetail from "./components/msgDetail";
-import {v4 as uuidv4} from 'uuid'
+import { v4 as uuidv4 } from "uuid";
 
 export default function Main() {
   //const [ status, setStatus ] = useState(null)
@@ -27,20 +27,18 @@ export default function Main() {
   const [user, setUser] = useState(null);
   const [noti, setNoti] = useState([]);
 
-
   const checkUser = () => {
     const myUser = auth.getUser();
     if (!myUser) {
-      setUser(null)
-      return
+      setUser(null);
+      return;
     }
-    const parsed = JSON.parse(myUser)
-    setUser(parsed.user);    
-}
-
+    const parsed = JSON.parse(myUser);
+    setUser(parsed.user);
+  };
 
   useEffect(() => {
-    checkUser()
+    checkUser();
   }, []);
 
   function clearNoti() {
@@ -91,7 +89,10 @@ export default function Main() {
           {/* message detail page */}
           <Route path="/:postID" element={<PostDetail />} />
           {/* comment detail page */}
-          <Route path="/login" element={<Login noti={newNoti} login={setUser} />} />
+          <Route
+            path="/login"
+            element={<Login noti={newNoti} login={setUser} />}
+          />
           <Route path="/register" element={<Register noti={newNoti} />} />
           {/*Error page*/}
           <Route

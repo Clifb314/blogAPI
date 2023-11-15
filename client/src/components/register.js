@@ -53,7 +53,9 @@ export default function Register({ noti }) {
           value={newUser.checkPW}
           onChange={handleChange}
         />
-        <button form="registerForm" type="submit">Submit</button>
+        <button form="registerForm" type="submit">
+          Submit
+        </button>
       </form>
     </div>
   );

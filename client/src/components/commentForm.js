@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import UserService from "../utils/dataAccess";
 import auth from "../utils/auth";
 
-export default function CommentForm({ postID, user }) {
+export default function CommentForm({ postID, postAuth, user }) {
   const [show, setShow] = useState(false);
 
   async function handleSubmit(e) {
@@ -11,35 +11,45 @@ export default function CommentForm({ postID, user }) {
     const form = new FormData(e.target);
     const result = await UserService.postComment(postID, form);
     if (result.err) {
-      console.log(result.err)
-      return
-   } else {
-    console.log('Successfully submitted')
+      console.log(result.err);
+      return;
+    } else {
+      console.log("Successfully submitted");
     }
   }
 
+  const toggleMsg = user === postAuth ? " " : "Click to respond";
+
   function toggle() {
+    if (user === postAuth) return;
     show ? setShow(false) : setShow(true);
   }
-  const PLACEHOLDER = user ? 'Be civil...' : 'Please log in to comment'
+  const PLACEHOLDER = user ? "Be civil..." : "Please log in to comment";
   let display = show ? (
     <form onSubmit={handleSubmit}>
-      <label className="comLabel" htmlFor="comText">Comment: </label>
+      <label className="comLabel" htmlFor="comText">
+        Comment:{" "}
+      </label>
       <textarea id="comText" name="content" placeholder={PLACEHOLDER} />
       <input name="author" hidden="true" value={user} />
       <input name="parent" hidden="true" value={postID} />
       <div className="comControl">
-        <button type="submit" hidden={!user ? true : false}>Submit</button>
-        <p className="toggleResp" onClick={toggle}>Close</p>
+        <button
+          type="submit"
+          hidden={!user || user === postAuth ? true : false}
+        >
+          Submit
+        </button>
+        <p className="toggleResp" onClick={toggle}>
+          Close
+        </p>
       </div>
     </form>
   ) : (
-    <p className="toggleResp" onClick={toggle}>Click to respond</p>
+    <p className="toggleResp" onClick={toggle}>
+      {toggleMsg}
+    </p>
   );
 
-  return (
-    <div className="commentForm">
-      {display}
-    </div>
-  )
+  return <div className="commentForm">{display}</div>;
 }

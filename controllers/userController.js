@@ -46,7 +46,7 @@ exports.login = function (req, res, next) {
         isAdmin: user.isAdmin,
       },
       process.env.SECRET,
-      { expiresIn: "10m", issuer: "CB" },
+      { expiresIn: "15m", issuer: "CB" },
       (err, token) => {
         if (err) return res.status(400).json(err);
         res.json({
