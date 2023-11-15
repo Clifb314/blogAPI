@@ -13,35 +13,38 @@ export default function Posts({ user, sorting, noti }) {
       if (sorting === "recent") {
         posts = await UserService.getAllPosts();
       } else posts = await UserService.getTopPosts();
-      console.log(posts)
       if (posts.err) {
         noti("failure", posts.err);
         return;
       } else {
-        console.log(posts);
         setPostList(posts);
         noti("success", "Posts loaded");
       }
     };
     getPosts();
-  }, []);
+  }, [sorting]);
 
   useEffect(() => {
     const getUser = async () => {
       const fetchUser = auth.getUser();
-      console.log(fetchUser)
       if (!fetchUser) return
-      else setMyUser(fetchUser._id)
+      else {
+        const output = await JSON.parse(fetchUser)
+        setMyUser(output.user._id)
+      }
     }
     getUser()
-  })
+
+    return () => {setMyUser(null)}
+
+  }, [user, sorting])
 
   const display =
-    postList.length > 1
+    postList.length > 0
       ? postList.map((post) => {
-          return <MsgCard key={uuidv4()} post={post} noti={noti} user={myUser} />;
+          return <div key={uuidv4()}><MsgCard post={post} noti={noti} user={myUser} /></div>;
         })
-      : "";
+      : "Database is empty :(";
 
   return (
     <div className="postView">{display}</div>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import UserService from "../utils/dataAccess";
 import MsgCard from "./msgCard";
+import { v4 as uuidv4 } from "uuid";
 
 export default function Home({ user, noti }) {
   //Lets display most recent post, total votes, etc for signed in user
@@ -11,16 +12,15 @@ export default function Home({ user, noti }) {
     const getUser = async () => {
       if (user) {
         const myUser = await UserService.getUserHome()
-        console.log(user)
-        console.log(myUser)
         if (myUser.err) {
           noti('failure', myUser.err)
           return
         } else {
           noti('success', 'User found')
           setUserInfo(myUser)
-          return
         }
+
+        return () => {setUserInfo(null)}
       } else {
         noti('failure', 'Not logged in')
         return
@@ -29,8 +29,9 @@ export default function Home({ user, noti }) {
     getUser()
   }, [user])
 
-  const posts = userInfo && userInfo.messages.length > 0 ? userInfo.messages.map(post => <MsgCard post={post} user={user._id} noti={noti} />)
+  const posts = userInfo && userInfo.messages.length > 0 ? userInfo.messages.map(post => <div key={uuidv4()}><MsgCard post={post} user={userInfo._id} noti={noti} /></div>)
   : <p>There's nothing here... Try posting something!</p>
+
   //const posts = <p>suck a dick</p>
 
   return (

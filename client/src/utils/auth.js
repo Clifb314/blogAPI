@@ -16,7 +16,6 @@ class Auth {
         throw new Error("Error accessing database");
       } else {
         const data = await response.json()
-        console.log(data)
         localStorage.setItem("user", JSON.stringify(data));
         return { message: "Logged in", user: data.user };
       }
@@ -64,6 +63,9 @@ class Auth {
     else output = null
     return output;
   }
+
+
+
 }
 
 export default new Auth();

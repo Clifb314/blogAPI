@@ -30,8 +30,14 @@ export default function Main() {
 
   const checkUser = () => {
     const myUser = auth.getUser();
-    setUser(myUser);    
+    if (!myUser) {
+      setUser(null)
+      return
+    }
+    const parsed = JSON.parse(myUser)
+    setUser(parsed.user);    
 }
+
 
   useEffect(() => {
     checkUser()
@@ -85,7 +91,7 @@ export default function Main() {
           {/* message detail page */}
           <Route path="/:postID" element={<PostDetail />} />
           {/* comment detail page */}
-          <Route path="/login" element={<Login noti={newNoti} login={checkUser} />} />
+          <Route path="/login" element={<Login noti={newNoti} login={setUser} />} />
           <Route path="/register" element={<Register noti={newNoti} />} />
           {/*Error page*/}
           <Route
@@ -98,7 +104,7 @@ export default function Main() {
           />
         </Routes>
       </BrowserRouter>
-      <Bubble user={user} />
+      <Bubble user={user} noti={newNoti} />
       <ToastContainer data={noti} onClick={removeNoti} removeAll={clearNoti} />
     </div>
   );

@@ -1,27 +1,41 @@
 import React, { useState } from "react";
 import UserService from "../utils/dataAccess";
 
-export default function Bubble({ user }) {
+export default function Bubble({ user, noti }) {
   //for making a new post
   const [display, setDisplay] = useState(false);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   //hide/show form onclick
   function toggleMsgForm(e) {
-    if (display) {
-      setDisplay(false)
-      //e.target.className = 'bubbleCont'
-    } else {
-      setDisplay(true)
-      //e.target.className = "bubbleCont open";
-    }
+    // if (display) {
+    //   setDisplay(false)
+    //   //e.target.className = 'bubbleCont'
+    // } else {
+    //   setDisplay(true)
+    //   //e.target.className = "bubbleCont open";
+    // }
+    if (!display) setDisplay(true)
   }
 
-  function handleSubmit(e) {
+  function closeForm() {
+    setDisplay(false)
+    setTitle('')
+    setContent('')
+  }
+
+  async function handleSubmit(e) {
     e.preventDefault();
-    const form = new FormData(e.target);
+    //formdata doesn't work natively with express-validator. Would need formidable
+    //const form = new FormData(e.target);
+    const form = {
+      title,
+      content
+    }
     console.log(form);
-    UserService.newPost(form);
+    const response = await UserService.newPost(form);
+    if (response.err) noti('failure', response.err)
+    else noti('success', 'Message posted!')
   }
 
   function handleChange(e) {
@@ -43,14 +57,16 @@ export default function Bubble({ user }) {
           onSubmit={handleSubmit}
         >
           <p>What's on your mind?</p>
-          <label htmlFor="title">Title:</label>
-          <input type="text" name="title" onChange={handleChange} placeholder="optional" />
+          <label htmlFor="Bubtitle">Title:</label>
+          <input id="Bubtitle" type="text" name="title" onChange={handleChange} value={title} placeholder="optional" />
           <textarea
             name="content"
+            value={content}
             onChange={handleChange}
             placeholder={PLACEHOLDER}
           />
           <button type="submit" hidden={user ? false : true}>Submit</button>
+          <button type="button" onClick={closeForm} >Close</button>
           <p className="signInWarning" hidden={user ? true : false}>
             Must be signed in to post
           </p>

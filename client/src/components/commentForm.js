@@ -21,15 +21,15 @@ export default function CommentForm({ postID, user }) {
   function toggle() {
     show ? setShow(false) : setShow(true);
   }
-
+  const PLACEHOLDER = user ? 'Be civil...' : 'Please log in to comment'
   let display = show ? (
     <form onSubmit={handleSubmit}>
-      <label className="comLabel" htmlFor="content">Comment: </label>
-      <textarea name="content" />
+      <label className="comLabel" htmlFor="comText">Comment: </label>
+      <textarea id="comText" name="content" placeholder={PLACEHOLDER} />
       <input name="author" hidden="true" value={user} />
       <input name="parent" hidden="true" value={postID} />
       <div className="comControl">
-        <button type="submit">Submit</button>
+        <button type="submit" hidden={!user ? true : false}>Submit</button>
         <p className="toggleResp" onClick={toggle}>Close</p>
       </div>
     </form>

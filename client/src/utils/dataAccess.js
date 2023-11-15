@@ -79,7 +79,6 @@ class UserService {
         mode: "cors",
         headers: authHeader(),
       });
-      console.log(response)
       if (!response.ok) {
         throw new Error("Error accessing database");
       } else return await response.json();
@@ -128,8 +127,11 @@ class UserService {
       const response = await fetch(postsURL + "create", {
         method: "POST",
         mode: 'cors',
-        headers: authHeader(),
-        body,
+        headers: {
+          ...authHeader(),
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
       });
       if (!response.ok) {
         throw new Error("Error accessing database");
@@ -169,7 +171,7 @@ class UserService {
       else return await response.json();
     } catch(error) {
       console.error("Error", error);
-      return { err: "Could not access database" };
+      return { err: error };
     }
   }
 

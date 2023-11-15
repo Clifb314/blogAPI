@@ -64,7 +64,7 @@ exports.createPost = [
       { issuer: "CB" },
       function (err, decoded) {
         if (err) return res.status(400).json(err);
-        console.log(decoded);
+        console.log('decoded token: ' + decoded);
         req.decoded = decoded;
         next();
       }
@@ -75,7 +75,7 @@ exports.createPost = [
   body("title").trim().escape(),
   body("content")
     .trim()
-    .isLength({ min: 1 })
+    .isLength({ min: 2 })
     .withMessage("Post cannot be blank")
     .escape(),
 
@@ -84,7 +84,7 @@ exports.createPost = [
     const { title, content } = req.body;
 
     if (!errors.isEmpty()) {
-      return res.json({ errors: errors.array() });
+      return res.status(400).json({ errors: errors.array() });
     }
     const newPost = new Message({
       title,
@@ -92,12 +92,18 @@ exports.createPost = [
       date: new Date(),
       author: req.decoded._id, //will get from token or will have to find from db
       comments: [],
+      likes: []
     });
-    await newPost.save();
-    await User.findByIdAndUpdate(req.decoded._id, {
-      $push: { messages: newPost._id },
-    });
-    return res.json(newPost);
+    console.log(newPost)
+    try {
+      await newPost.save();
+      await User.findByIdAndUpdate(req.decoded._id, {
+        $push: { messages: newPost._id },
+      });
+      return res.json(newPost);  
+    } catch(error) {
+      return res.status(400).json({err: 'Could not update database'})
+    }
   },
 ];
 
@@ -111,17 +117,22 @@ exports.updatePost = [
     if (!errors.isEmpty()) {
       return res.json({ errors: errors.array() });
     }
-    const decoded = jwt.verify(req.token, process.env.SECRET, { issuer: "CB" });
-    const myUser = decoded._id;
-
-    const newPost = await Message.findOneAndUpdate(
-      { _id: req.params.postID, author: myUser },
-      { title: title, content: content },
-      { new: true }
-    ).exec();
-    if (newPost === null) return res.json({ error: "Update failed" });
-
-    return res.json(newPost);
+    try {
+      const decoded = jwt.verify(req.token, process.env.SECRET, { issuer: "CB" });
+      const myUser = decoded._id;
+  
+      const newPost = await Message.findOneAndUpdate(
+        { _id: req.params.postID, author: myUser },
+        { title: title, content: content },
+        { new: true }
+      ).exec();
+      if (newPost === null) return res.json({ error: "Update failed" });
+  
+      return res.json(newPost);
+    } catch(error) {
+      console.log(error)
+      return res.json({error})
+    }
   },
 ];
 
@@ -141,27 +152,34 @@ exports.deletePost = [
   // },
 
   async (req, res, next) => {
-    const decoded = jwt.verify(req.token, process.env.SECRET, { issuer: "CB" });
-    //should check that user is author
-    //const myMessage = await Message.findByIdAndDelete(req.params.postID).exec()
-    const myMessage = await Message.findOneAndRemove({
-      _id: req.params.postID,
-      author: decoded._id,
-    }).exec();
-    if (!myMessage)
-      return res
-        .status(400)
-        .json({ error: "Post not found or author/user mismatch" });
-    else {
-      User.findByIdAndUpdate(decoded._id, {
-        $pull: { messages: req.params.postID },
-      });
+    try {
+      const decoded = jwt.verify(req.token, process.env.SECRET, { issuer: "CB" });
+      //should check that user is author
+      //const myMessage = await Message.findByIdAndDelete(req.params.postID).exec()
+      const myMessage = await Message.findOneAndRemove({
+        _id: req.params.postID,
+        author: decoded._id,
+      }).exec();
+      if (!myMessage)
+        return res
+          .status(400)
+          .json({ error: "Post not found or author/user mismatch" });
+      else {
+        User.findByIdAndUpdate(decoded._id, {
+          $pull: { messages: req.params.postID },
+        });
+      }
+      return res.json({ message: `Post (id: ${myMessage._id}) deleted` });
+    } catch(error) {
+      console.error(error)
+      return res.status(400).json({error})
     }
-    return res.json({ message: `Post (id: ${myMessage._id}) deleted` });
   },
 ];
 
 exports.likePost = async (req, res, next) => {
+
+  try {
   //get user from token?
   const payload = jwt.verify(req.token, process.env.SECRET, { issuer: "CB" });
   const user = payload._id;
@@ -175,21 +193,31 @@ exports.likePost = async (req, res, next) => {
   if (post === null) return res.json({ error: `Failed to like post` });
 
   else return res.json({ post, message: "Like sent" });
+  } catch(error) {
+    console.error(error)
+    return res.status(400).json({error})
+  }
 };
 
 exports.dislikePost = async (req, res, next) => {
-  const payload = jwt.verify(req.token, process.env.SECRET, { issuer: "CB" });
-  const user = payload._id;
-
-  const post = await Message.findOneAndUpdate(
-    { _id: req.params.postID, likes: user },
-    { $pull: { likes: user } },
-    { new: true }
-  ).exec();
-
-  if (post === null) return res.json({ error: `Failed to dislike post` });
-
-  return res.json({ post, message: "like removed" });
+  try {
+    const payload = jwt.verify(req.token, process.env.SECRET, { issuer: "CB" });
+    console.log(payload)
+    const user = payload._id;
+    const post = await Message.findOneAndUpdate(
+      { _id: req.params.postID, likes: user },
+      { $pull: { likes: user } },
+      { new: true }
+    ).exec();
+  
+    if (!post) {
+      return res.json({ error: `Failed to dislike post` });
+    } else {
+      return res.json({ post, message: "like removed" });
+    }
+  } catch(error) {
+    return res.status(400).json({error})
+  }
 };
 
 exports.postDetail = async (req, res, next) => {

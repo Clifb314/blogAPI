@@ -67,15 +67,16 @@ export default function PopComments({ comment, user }) {
       </div>
       <div hidden={editting ? false : true}>
         <form onSubmit={handleSubmit}>
-          <label htmlFor="content">
+          <label htmlFor="comContent">
             Comment:{" "}
             <textarea
+              id="comContent"
               name="content"
               value={openComment.content}
               onChange={handleChange}
             />
           </label>
-          <button type="submit">Submit</button>
+          <button type="submit" hidden={!user ? true : false}>Submit</button>
           <button onClick={handleClick}>Close</button>
         </form>
       </div>

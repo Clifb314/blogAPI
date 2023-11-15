@@ -38,6 +38,10 @@ export default function MsgCard({ post, user, noti }) {
   }
 
   async function handleVote(e, up) {
+    if (!user) {
+      noti('failure', "Must be logged in to vote")
+      return
+    }
     e.disabled = true;
     const result = await UserService.likePost(post._id, up);
     console.log(result);
@@ -57,7 +61,7 @@ export default function MsgCard({ post, user, noti }) {
   }
   
   const allComments = post.comments.length > 0 ? post.comments.map(comment => {
-    return <PopComments comment={comment} user={user} />
+    return <div key={uuidv4()}><PopComments comment={comment} user={user} /></div>
   }) :  <p>*crickets*</p>
 
   const displayComments = showComments ? (
@@ -67,10 +71,10 @@ export default function MsgCard({ post, user, noti }) {
   ) : (
     <p className='toggleCom' onClick={toggleComments}>Show {post.comments.length} comment(s)...</p>
   );
+  const userID = user
   const authorID = post.author._id ? post.author._id : post.author;
-  const key = uuidv4();
   return (
-    <div className="msgDiv" key={key}>
+    <div className="msgDiv">
       <div className="msgCard" hidden={editting ? true : false}>
         <p><span className="username"><em>{post.author.username}</em></span></p>
         <p><span className="title">{post.title}</span></p>
@@ -85,22 +89,20 @@ export default function MsgCard({ post, user, noti }) {
         </div>
         <div className="postControls">
           <div
-            className="votes"
-            hidden={user === authorID ? true : false}
-          >
-            <button onClick={(e) => handleVote(e, true)}>Like</button>
-            <button onClick={(e) => handleVote(e, false)}>Dislike</button>
+            className="votes">
+            <button hidden={userID === authorID ? true : false} onClick={(e) => handleVote(e, true)}>Like</button>
+            <button hidden={userID === authorID ? true : false} onClick={(e) => handleVote(e, false)}>Dislike</button>
           </div>
           <div className="userbtns">
             <button
               onClick={toggle}
-              hidden={user === authorID ? false : true}
+              hidden={userID === authorID ? false : true}
             >
               edit?
             </button>
             <button
               onClick={handleDelete}
-              hidden={user === authorID ? false : true}
+              hidden={userID === authorID ? false : true}
             >
               Delete?
             </button>
@@ -110,7 +112,7 @@ export default function MsgCard({ post, user, noti }) {
       <div className="msgForm" hidden={editting ? false : true}>
         <form onSubmit={handleSubmit}>
           <label htmlFor="title">Title: </label>
-          <input name="title" value={openMsg.title} onChange={handleChange} />
+          <input id="title" name="title" value={openMsg.title} onChange={handleChange} />
           <textarea
             name="content"
             value={openMsg.content}

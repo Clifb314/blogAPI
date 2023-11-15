@@ -1,9 +1,20 @@
 import React, { useState } from "react";
 import Auth from "../utils/auth";
+import { useNavigate } from "react-router-dom";
 
 export default function Login({ noti, login }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+
+  let navi = useNavigate()
+
+  function autoLogOut() {
+    setTimeout(() => {
+      Auth.logout()
+      login(null)
+      noti('failure', 'Logged out, token expiration')
+    }, 100000)
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -14,8 +25,11 @@ export default function Login({ noti, login }) {
     const response = await Auth.login(data);
     if (response.err) noti("failure", response.err);
     else {
+      console.log(response.user)
       noti("success", response.message);
-      login()
+      login(response.user)
+      autoLogOut()
+      navi('/home')
     }
   }
 
