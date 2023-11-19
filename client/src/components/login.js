@@ -64,7 +64,7 @@ export default function Login({ noti, login }) {
           onChange={handleChange}
           type="password"
         />
-        <button type="submit" disabled={username && password ? false : true}>
+        <button className="submit" type="submit" disabled={username && password ? false : true}>
           Log in
         </button>
       </form>

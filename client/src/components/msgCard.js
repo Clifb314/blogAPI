@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import PopComments from "./popComments";
 import CommentForm from "./commentForm";
-import auth from "../utils/auth";
 import UserService from "../utils/dataAccess";
 import { v4 as uuidv4 } from "uuid";
 
 export default function MsgCard({ post, user, noti }) {
   const [editting, setEditting] = useState(false);
-  const [openMsg, setOpenMsg] = useState({});
+  const [openMsg, setOpenMsg] = useState({title: '', content: ''});
   const [showComments, setShowComments] = useState(false);
 
   function toggle() {
@@ -23,7 +22,11 @@ export default function MsgCard({ post, user, noti }) {
   async function handleSubmit(e) {
     e.preventDefault();
     toggle();
-    const form = new FormData(e.target);
+    //const form = new FormData(e.target);
+    const form = {
+      title: openMsg.title,
+      content: openMsg.content
+    }
     const result = await UserService.editPost(post._id, form);
     if (result.err) console.log(result.err);
     else console.log(result);
@@ -102,7 +105,7 @@ export default function MsgCard({ post, user, noti }) {
           <span className="postContent">{post.content}</span>
         </p>
         <div className="postDate">
-          <p>Date : {new Date(post.date).toLocaleString()}</p>
+          <p>{new Date(post.date).toLocaleString()}</p>
           <p>Likes : {post.likes.length}</p>
         </div>
         <div className="commentTogs">
@@ -112,6 +115,7 @@ export default function MsgCard({ post, user, noti }) {
         <div className="postControls">
           <div className="votes">
             <button
+              className="submit"
               disabled={liked}
               hidden={userID === authorID ? true : false}
               onClick={(e) => handleVote(e, true)}
@@ -119,6 +123,7 @@ export default function MsgCard({ post, user, noti }) {
               Like
             </button>
             <button
+              className="delete"
               disabled={!liked}
               hidden={userID === authorID ? true : false}
               onClick={(e) => handleVote(e, false)}
@@ -128,12 +133,14 @@ export default function MsgCard({ post, user, noti }) {
           </div>
           <div className="userbtns">
             <button
+              className="edit"
               onClick={toggle}
               hidden={userID === authorID ? false : true}
             >
               edit?
             </button>
             <button
+              className="delete"
               onClick={handleDelete}
               hidden={userID === authorID ? false : true}
             >
@@ -157,7 +164,7 @@ export default function MsgCard({ post, user, noti }) {
             onChange={handleChange}
           />
           <button type="submit">submit</button>
-          <button onClick={toggle}>Close</button>
+          <button type="button" onClick={toggle}>Close</button>
         </form>
       </div>
     </div>

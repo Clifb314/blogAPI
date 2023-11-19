@@ -19,7 +19,6 @@
   --input-border-width: 1px;
   --paragraph-margin: 1em;
   --text-leading: 1.5;
-  box-sizing: border-box;
 }
 
 *,
@@ -30,14 +29,16 @@
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-body, div#app, div#content {
+body,
+div#app,
+div#content {
   height: 100vh;
 }
 
@@ -46,7 +47,7 @@ label {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
 
@@ -74,6 +75,36 @@ div.homepage {
   flex: 1;
 }
 
+/* buttons */
+div.votes button,
+div.userbtns button,
+div.commOut button,
+div.userEdit button,
+.msgBubble button,
+.register button,
+.commentForm button {
+  border-radius: 10px;
+  margin: 4px;
+  padding: 2px 0px;
+  cursor: pointer;
+  width: 60px;
+  border: 1px solid black;
+  transition: all ease-in-out 100ms;
+}
+
+button:hover {
+  background-color: rgb(105, 105, 243);
+  color: white;
+  border: 1px solid white;
+}
+
+button.submit:hover {
+  background-color: green;
+}
+
+button.delete:hover, button.closeAll:hover {
+  background-color: red;
+}
 
 /* Posts pages */
 .postView {
@@ -95,7 +126,8 @@ div.homepage {
   margin: 4px;
 }
 
-p.toggleCom, p.toggleResp {
+p.toggleCom,
+p.toggleResp {
   font-size: 12px;
   font-style: italic;
   cursor: pointer;
@@ -103,27 +135,11 @@ p.toggleCom, p.toggleResp {
   transition: all ease 100ms;
 }
 
-p.toggleCom:hover, p.toggleResp:hover {
+p.toggleCom:hover,
+p.toggleResp:hover {
   color: red;
   text-decoration: underline;
 }
-
-div.votes button, div.userbtns button, div.comControl button {
-  border-radius: 10px;
-  margin: 1px 4px;
-  padding: 2px 0px;
-  cursor: pointer;
-  width: 60px;
-  border: 1px solid black;
-  transition: all ease-in-out 100ms;
-}
-
-button:hover {
-  background-color: rgb(105, 105, 243);
-  color: white;
-  border: 1px solid white;
-}
-
 
 div.postControls {
   display: flex;
@@ -136,7 +152,8 @@ div.votes {
   justify-content: space-evenly;
 }
 
-div.postDate p, p.postDate {
+div.postDate p,
+p.postDate {
   font-size: 10px;
   text-align: right;
 }
@@ -156,6 +173,18 @@ span.title {
   display: block;
 }
 
+.commOut p.author {
+  font-style: italic;
+}
+
+.commOut p.content {
+  font-size: 14px;
+}
+
+.commOut p.postDate {
+  padding: 4px;
+}
+
 @keyframes openCom {
   from {
     transform: scale(0);
@@ -167,46 +196,83 @@ span.title {
 
 div.commCard {
   font-size: 12px;
-  background-color: rgb(180, 178, 178);
+  background-color: rgb(210, 208, 218);
   animation: openCom var(--toast-speed);
 }
 
+div.commControl {
+  display: flex;
+  justify-content: flex-end;
+  padding-bottom: 3px;
+}
+
+/* User account page */
+div.userEdit {
+  height: 80%;
+  width: 100%;
+  text-align: left;
+  padding: 6px;
+  display: flex;
+  justify-content: center;
+}
+
+div.userEdit form {
+  width: 50%;
+  height: fit-content;
+  border: 1px solid black;
+  margin: 16px;
+  padding: 20px;
+  box-shadow: 4px 2px 11px 0px rgba(0, 0, 0, 0.83);
+  background-color: rgb(240, 203, 230);
+}
+
+div.userEdit label {
+  display: block;
+  font-weight: 700;
+}
+
+div.userEdit input {
+  width: 100%;
+  margin: 4px 0;
+}
+
 /* Bubble */
-div.bubbleCont {
+div.bubble {
   z-index: 5;
   position: absolute;
-  bottom: 20px;
-  right: 20px;
+  bottom: 40px;
+  right: 40px;
   border-radius: 50%;
   width: 15px;
   height: 15px;
   background-color: red;
 }
 
-div.bubbleCont.open {
+div.bubble.open {
   background-color: blue;
 }
 
 @keyframes slide-up {
   from {
-    transform: translateY(-100%);
+    transform: translateX(-100%);
   }
   to {
-    transform: translateY(0%);
+    transform: translateX(0%);
   }
 }
 
 div.msgBubble {
+  z-index: 5;
   font-size: 14px;
   min-height: 200px;
   position: absolute;
   border: 2px solid black;
   right: 25px;
   bottom: 25px;
-  background-color: rgb(185, 135, 243);
+  background-color: rgb(207, 173, 245);
   padding: 8px 25px;
   animation: slide-up var(--toast-speed);
-  box-shadow: 4px 2px 11px 0px rgba(0,0,0,0.83);
+  box-shadow: 4px 2px 11px 0px rgba(0, 0, 0, 0.83);
 }
 
 div.msgBubble p {
@@ -225,26 +291,56 @@ div.msgBubble input {
 }
 
 /* Registration and login */
-div.register, div.loginDiv {
-  background-color: rgb(144, 224, 231);
+div.register,
+div.loginDiv {
+  background-color: rgb(194, 233, 236);
   margin: 25px;
   border: 1px solid black;
   box-shadow: gray 0px 1px 3px 0px, rgb(165, 164, 164) 0px 1px 2px 0px;
 }
 
-div.register form, form#loginForm {
+div.register form,
+form#loginForm {
   height: 100%;
   width: 100%;
   text-align: left;
   padding: 6px;
 }
 
-div.register input, #loginForm input {
+div.register input,
+#loginForm input {
   width: 100%;
 }
 
-div.register label, #loginForm label {
+div.register label,
+#loginForm label {
   display: block;
+}
+
+div.errorList ul {
+  padding: 5px 20px;
+}
+
+ul.passReqs li {
+  font-size: 12px;
+}
+
+div.errorList li.invalid {
+  color: red;
+  list-style-type: none;
+}
+
+div.errorList li.invalid::before {
+  content: "X ";
+}
+
+div.errorList li.valid {
+  color: rgb(40, 155, 40);
+  list-style-type: none;
+}
+
+div.errorList li.valid::before {
+  content: "✓ ";
 }
 
 /* Toast notification styling */
@@ -293,11 +389,11 @@ div.register label, #loginForm label {
 }
 
 button.closeAll {
-    position: relative;
-    margin: 4px 0px;
-    border-radius: 2px;
-    border: none;
-    animation: slide-out var(--toast-speed);
+  position: relative;
+  margin: 4px 0px;
+  border-radius: 2px;
+  border: none;
+  animation: slide-out var(--toast-speed);
 }
 
 .type-success {
@@ -343,5 +439,6 @@ button.closeAll {
 }
 
 .toast-list .toast {
-  transition: transform var(--toast-speed), opacity var(--toast-speed), box-shadow var(--toast-speed) ease-in-out;
+  transition: transform var(--toast-speed), opacity var(--toast-speed),
+    box-shadow var(--toast-speed) ease-in-out;
 }

@@ -5,8 +5,9 @@ const postsURL = "http://localhost:5000/api/posts/";
 const comURL = "http://localhost:5000/api/comments/";
 
 class UserService {
-  //User data
 
+
+  //User data
   async getAllUsers() {
     try {
       const response = await fetch(APIurl, {
@@ -56,13 +57,16 @@ class UserService {
   }
 
   async editAccount(body) {
-    //body will have to be FormData object?
+    //body will have to be FormData object? NOPE JSON
     try {
       const response = await fetch(`${APIurl}/edit`, {
         method: "PUT",
         mode: "cors",
-        headers: authHeader(),
-        body,
+        headers: {
+          ...authHeader(),
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
       });
       if (!response.ok) throw new Error("Error posting to database");
       else return await response.json();
@@ -71,6 +75,9 @@ class UserService {
       return { err: "Could not access database" };
     }
   }
+
+
+
   //Post data
   async getAllPosts() {
     try {
@@ -81,7 +88,10 @@ class UserService {
       });
       if (!response.ok) {
         throw new Error("Error accessing database");
-      } else return await response.json();
+      } else {
+        const output = await response.json()
+        return output
+      }
       //returns an array of objects
     } catch(error) {
       console.error("Error", error);
@@ -189,6 +199,9 @@ class UserService {
       return { err: "Could not access database" };
     }
   }
+
+
+
   //Comment data
 
   async getComments(postID) {
@@ -211,8 +224,11 @@ class UserService {
       const response = await fetch(comURL + "msg/" + postID + "/create", {
         method: "POST",
         mode: "cors",
-        headers: authHeader(),
-        body,
+        headers: {
+          ...authHeader(),
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
       });
       if (!response.ok) throw new Error("Error accessing database");
       else return { comment: response, message: "Comment posted" };
@@ -227,8 +243,11 @@ class UserService {
       const response = await fetch(comURL + commID + "/edit", {
         method: "PUT",
         mode: "cors",
-        headers: authHeader(),
-        body,
+        headers: {
+          ...authHeader(),
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
       });
       if (!response.ok) throw new Error("Error accessing database");
       else return await response.json();

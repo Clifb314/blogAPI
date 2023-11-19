@@ -16,9 +16,8 @@ export default function Home({ user, noti }) {
           noti("failure", myUser.err);
           return;
         } else {
-          noti("success", "User found");
+          noti("success", "Welcome!");
           setUserInfo(myUser);
-          console.log(myUser);
         }
 
         return () => {

@@ -42,6 +42,6 @@ export default function UserDetail({ noti }) {
     <p>Error: {user.err}</p>
   </div>
   ) : (
-        { display }
+        <div>{ display }</div>
   );
 }

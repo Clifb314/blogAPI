@@ -40,9 +40,10 @@ exports.topPosts = async function (req, res, next) {
       select: "author content date parent",
       populate: {
         path: "author",
+        model: 'userModel',
         select: "username",
       },
-      perDocumentLimit: 3,
+      perDocumentLimit: 5,
     })
     .sort({ likes: -1 })
     .limit(15)

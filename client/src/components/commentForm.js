@@ -4,11 +4,20 @@ import auth from "../utils/auth";
 
 export default function CommentForm({ postID, postAuth, user }) {
   const [show, setShow] = useState(false);
+  const [content, setContent] = useState('')
+
+
+  function handleChange(e) {
+    setContent(e.target.value)
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
     setShow(false);
-    const form = new FormData(e.target);
+    // form = new FormData(e.target);
+    const form = {
+      content: content
+    }
     const result = await UserService.postComment(postID, form);
     if (result.err) {
       console.log(result.err);
@@ -28,13 +37,12 @@ export default function CommentForm({ postID, postAuth, user }) {
   let display = show ? (
     <form onSubmit={handleSubmit}>
       <label className="comLabel" htmlFor="comText">
-        Comment:{" "}
+        Comment: 
       </label>
-      <textarea id="comText" name="content" placeholder={PLACEHOLDER} />
-      <input name="author" hidden="true" value={user} />
-      <input name="parent" hidden="true" value={postID} />
+      <textarea id="comText" name="content" value={content} placeholder={PLACEHOLDER} onChange={handleChange} />
       <div className="comControl">
         <button
+          className="submit"
           type="submit"
           hidden={!user || user === postAuth ? true : false}
         >

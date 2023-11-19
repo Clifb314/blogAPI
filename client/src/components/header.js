@@ -14,9 +14,16 @@ export default function Header({ user, setUser }) {
   let checkUser;
   if (user) {
     checkUser = (
-      <Link to="/home" onClick={logout}>
-        Log Out
-      </Link>
+      <ul>
+        <li>
+          <Link to='/account'>Account</Link>
+        </li>
+        <li>
+          <Link to="/home" onClick={logout}>
+            Log Out
+          </Link>
+        </li>
+      </ul>
     );
   } else {
     checkUser = (

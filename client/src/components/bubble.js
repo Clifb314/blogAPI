@@ -47,7 +47,7 @@ export default function Bubble({ user, noti }) {
   const PLACEHOLDER = "Speak your mind...";
 
   return (
-    <div className="bubbleCont" onClick={toggleMsgForm}>
+    <div className="bubble" onClick={toggleMsgForm}>
       <div className="msgBubble" hidden={!display ? true : false}>
         <form
           id="msgForm"
@@ -65,8 +65,8 @@ export default function Bubble({ user, noti }) {
             onChange={handleChange}
             placeholder={PLACEHOLDER}
           />
-          <button type="submit" hidden={user ? false : true}>Submit</button>
-          <button type="button" onClick={closeForm} >Close</button>
+          <button className="submit" type="submit" hidden={user ? false : true}>Submit</button>
+          <button className="delete" type="button" onClick={closeForm} >Close</button>
           <p className="signInWarning" hidden={user ? true : false}>
             Must be signed in to post
           </p>

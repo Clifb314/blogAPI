@@ -90,11 +90,13 @@ exports.signup = [
     .trim()
     .escape()
     .custom(async (value, { req }) => {
-      if (value !== req.body.password) {
-        throw new Error("Passwords must match");
-      }
-      return true;
-    }),
+      return value !== req.body.password
+      // if (value !== req.body.password) {
+      //   throw new Error("Passwords must match");
+      // }
+      // return true;
+    })
+    .withMessage('Passwords must match'),
 
   async (req, res, next) => {
     //validation errors
@@ -109,10 +111,10 @@ exports.signup = [
     //check if user exists
     const checkUser = await User.findOne({ username: username });
     if (checkUser) {
-      return res.status(409).json({ error: "Username taken" });
+      return res.status(409).json({ custError: "Username taken" });
     }
     if (password !== checkPW) {
-      return res.status(401).json({ error: "Passwords must match" });
+      return res.status(401).json({ custError: "Passwords must match" });
     }
     //create user
     bcrypt.hash(password, 10, async function (err, hash) {
@@ -154,8 +156,10 @@ exports.userDetail = [
       { issuer: "CB" },
       function (err, decoded) {
         if (err) return res.status(401).json(err);
-        req.decoded = decoded;
-        next();
+        else {
+          req.decoded = decoded;
+          next();  
+        }
       }
     );
   },
@@ -185,8 +189,10 @@ exports.myHome = [
       { issuer: "CB" },
       function (err, decoded) {
         if (err) return res.status(401).json(err);
-        req.decoded = decoded;
-        next();
+        else {
+          req.decoded = decoded;
+          next();
+        }
       }
     );
   },
@@ -197,9 +203,14 @@ exports.myHome = [
       return res
         .status(401)
         .json({ error: "Must be logged in to access this page" });
-    const myUser = await User.findById(myID, "-_password")
+    const myUser = await User.findById(myID, "-password")
       .populate({
         path: "messages",
+        populate: {
+          path: 'author',
+          select: 'username',
+          model: 'userModel'  
+        },
         sort: { date: -1 },
         limit: 5,
       })
@@ -244,17 +255,18 @@ exports.editSelf = [
     .trim()
     .escape()
     .custom(async (value, { req }) => {
-      if (value !== req.body.password) {
-        throw new Error("Passwords must match");
-      }
-      return true;
+      return value === req.body.password
+      
+      // if (value !== req.body.password) {
+      //   throw new Error("Passwords must match");
+      // }
     }),
   body("oldPW").trim().escape(),
 
   async (req, res, next) => {
     const myID = req.decoded._id;
     console.log({ id: myID, decoded: req.decoded });
-    if (!myID) return res.status(401).json({ error: "Access denied" });
+    if (!myID) return res.status(401).json({ err: "Access denied" });
     const myUser = await User.findById(myID).exec();
     if (!myUser) return res.status(400).json({ err: "User not found" });
     const { username, email, password, oldPW } = req.body;

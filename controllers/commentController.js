@@ -6,7 +6,10 @@ const jwt = require("jsonwebtoken");
 exports.allComments = async (req, res) => {
   const allComments = await Comment.find({})
     .sort({ date: -1 })
-    .populate("author")
+    .populate({
+      path: 'author',
+      select: 'username'
+    })
     .exec();
 
   if (allComments.length === 0) {
@@ -31,23 +34,29 @@ exports.createComment = [
   async (req, res) => {
     const decoded = jwt.verify(req.token, process.env.SECRET, { issuer: "CB" });
     const errors = validationResult(req.body);
+    console.log(req.body)
     //will pass parent post ID as a hidden input
     //NO get author from token, get parent from params
     //const { author, content, parent } = req.body;
 
     if (!errors.isEmpty()) return res.json(errors.array());
 
-    const newComment = new Comment({
-      author: decoded._id,
-      content: req.body.content,
-      parent: req.params.postID,
-      date: new Date(),
-    });
-    await newComment.save();
-    await Message.findByIdAndUpdate(req.params.postID, {
-      $push: { comments: newComment._id },
-    });
-    return res.json(newComment);
+    try {
+      const newComment = new Comment({
+        author: decoded._id,
+        content: req.body.content,
+        parent: req.params.postID,
+        date: new Date(),
+      });
+      await newComment.save();
+      await Message.findByIdAndUpdate(req.params.postID, {
+        $push: { comments: newComment._id },
+      });
+      return res.json(newComment);
+    } catch(error) {
+      console.log(error)
+      return res.status(500).json({error: 'Failed to save comment'})
+    }
   },
 ];
 

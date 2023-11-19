@@ -43,6 +43,9 @@ class Auth {
         }
       });
       if (!response.ok) {
+        const output = await response.json()
+        console.log(output)
+        if (output.custError) return {err: output.custError}
         throw new Error("Error writing to database");
       } else {
         const consoleOut = await response.json()

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import UserService from "../utils/dataAccess";
-import auth from "../utils/auth";
 import {v4 as uuidv4} from 'uuid'
 import { useNavigate } from "react-router-dom";
 
@@ -28,7 +27,8 @@ export default function PopComments({ comment, user }) {
   //finish submit/delete pls
   async function handleSubmit(e) {
     e.preventDefault();
-    const form = new FormData(e.target);
+    //const form = new FormData(e.target);
+    const form = openComment
     const result = await UserService.editComment(comment._id, form);
     if (result.err) {
       navi("/error", { state: { source: "Comments", err: result.err } });
@@ -49,21 +49,25 @@ export default function PopComments({ comment, user }) {
   return (
     <div className="commOut" key={uuidv4()}>
       <div className="commCard" hidden={editting ? true : false}>
-        <p>{comment.author.username}</p>
-        <p>{comment.content}</p>
+        <p className="author">{comment.author.username}</p>
+        <p className="content">{comment.content}</p>
         <p className="postDate">{new Date(comment.date).toLocaleString()}</p>
-        <button
-          onClick={handleClick}
-          hidden={user === comment.author._id ? false : true}
-        >
-          Edit?
-        </button>
-        <button
-          onClick={handleDelete}
-          hidden={user === comment.author._id ? false : true}
-        >
-          Delete?
-        </button>
+        <div className="commControl">
+          <button
+            className="edit"
+            onClick={handleClick}
+            hidden={user === comment.author._id ? false : true}
+          >
+            Edit?
+          </button>
+          <button
+            className="delete"
+            onClick={handleDelete}
+            hidden={user === comment.author._id ? false : true}
+          >
+            Delete?
+          </button>
+        </div>
       </div>
       <div hidden={editting ? false : true}>
         <form onSubmit={handleSubmit}>
@@ -72,12 +76,12 @@ export default function PopComments({ comment, user }) {
             <textarea
               id="comContent"
               name="content"
-              value={openComment.content}
+              value={openComment}
               onChange={handleChange}
             />
           </label>
-          <button type="submit" hidden={!user ? true : false}>Submit</button>
-          <button onClick={handleClick}>Close</button>
+          <button className="submit" type="submit" hidden={!user ? true : false}>Submit</button>
+          <button className="delete" type="button" onClick={handleClick}>Close</button>
         </form>
       </div>
     </div>
