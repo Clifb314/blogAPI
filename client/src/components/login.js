@@ -28,6 +28,7 @@ export default function Login({ noti, login }) {
     else {
       console.log(response.user);
       noti("success", response.message);
+      //pass the user back to main
       login(response.user);
       autoLogOut();
       navi("/home");
@@ -53,6 +54,7 @@ export default function Login({ noti, login }) {
         <label htmlFor="username">Username: </label>
         <input
           name="username"
+          id="username"
           value={username}
           onChange={handleChange}
           autoComplete="on"
@@ -60,9 +62,11 @@ export default function Login({ noti, login }) {
         <label htmlFor="password">Password: </label>
         <input
           name="password"
+          id="password"
           value={password}
           onChange={handleChange}
           type="password"
+          autoComplete="off"
         />
         <button className="submit" type="submit" disabled={username && password ? false : true}>
           Log in

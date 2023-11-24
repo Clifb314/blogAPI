@@ -1,12 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import PopComments from "./popComments";
 import CommentForm from "./commentForm";
 import UserService from "../utils/dataAccess";
 import { v4 as uuidv4 } from "uuid";
 
-export default function MsgCard({ post, user, noti }) {
+export default function MsgCard({ post, user, noti, redraw }) {
   const [editting, setEditting] = useState(false);
-  const [openMsg, setOpenMsg] = useState({title: '', content: ''});
+  const [openMsg, setOpenMsg] = useState({title: post.title, content: post.content});
   const [showComments, setShowComments] = useState(false);
 
   function toggle() {
@@ -32,6 +32,25 @@ export default function MsgCard({ post, user, noti }) {
     else console.log(result);
   }
 
+  function refreshCard(commID, content) {
+    const newArr = post.comments.map((comment => {
+      if (comment._id === commID) {
+        const newComm = {
+          ...comment,
+          content: content
+        }
+        return newComm
+      } else {
+        return comment
+      }
+    }))
+
+
+
+    redraw(post._id, newArr)
+    setShowComments(true)
+  }
+
   function handleChange(e) {
     const { name, value } = e.target;
     setOpenMsg({
@@ -45,7 +64,7 @@ export default function MsgCard({ post, user, noti }) {
       noti("failure", "Must be logged in to vote");
       return;
     }
-    e.disabled = true;
+    e.disabled = e.disabled ? false : true;
     const result = await UserService.likePost(post._id, up);
     console.log(result);
   }
@@ -63,11 +82,11 @@ export default function MsgCard({ post, user, noti }) {
   }
 
   const allComments =
-    post.comments.length > 0 ? (
+    post && post.comments.length > 0 ? (
       post.comments.map((comment) => {
         return (
           <div key={uuidv4()}>
-            <PopComments comment={comment} user={user} />
+            <PopComments comment={comment} user={user} redraw={refreshCard} />
           </div>
         );
       })
@@ -75,18 +94,31 @@ export default function MsgCard({ post, user, noti }) {
       <p>*crickets*</p>
     );
 
-  const displayComments = showComments ? (
-    <div>
-      {allComments}
-      <p className="toggleCom" onClick={toggleComments}>
-        hide comments
+  const displayComments = (view, post) => {
+    if (view && post) {
+      return (
+        <div>
+        {allComments}
+        <p className="toggleCom" onClick={toggleComments}>
+          hide comments
+        </p>
+      </div>
+      )
+    } else {
+      return (
+        <p className="toggleCom" onClick={toggleComments}>
+        Show {post.comments.length} comment(s)...
       </p>
-    </div>
-  ) : (
-    <p className="toggleCom" onClick={toggleComments}>
-      Show {post.comments.length} comment(s)...
-    </p>
-  );
+      )
+    }
+  } 
+
+  const display = useMemo(
+    () => displayComments(showComments, post)
+  , [showComments])
+
+
+
   const userID = user;
   const authorID = post.author._id ? post.author._id : post.author;
   const liked = post.likes.includes(userID)
@@ -110,7 +142,7 @@ export default function MsgCard({ post, user, noti }) {
         </div>
         <div className="commentTogs">
           <CommentForm postID={post._id} postAuth={post.author._id} user={user} />
-          {displayComments}
+          {display}
         </div>
         <div className="postControls">
           <div className="votes">
@@ -137,7 +169,7 @@ export default function MsgCard({ post, user, noti }) {
               onClick={toggle}
               hidden={userID === authorID ? false : true}
             >
-              edit?
+              Edit?
             </button>
             <button
               className="delete"
@@ -163,7 +195,7 @@ export default function MsgCard({ post, user, noti }) {
             value={openMsg.content}
             onChange={handleChange}
           />
-          <button type="submit">submit</button>
+          <button type="submit">Submit</button>
           <button type="button" onClick={toggle}>Close</button>
         </form>
       </div>

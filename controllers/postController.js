@@ -64,7 +64,6 @@ exports.createPost = [
       { issuer: "CB" },
       function (err, decoded) {
         if (err) return res.status(400).json(err);
-        console.log('decoded token: ' + decoded);
         req.decoded = decoded;
         next();
       }

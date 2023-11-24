@@ -1,38 +1,43 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import UserService from "../utils/dataAccess";
 import {v4 as uuidv4} from 'uuid'
 import { useNavigate } from "react-router-dom";
 
-export default function PopComments({ comment, user }) {
+export default function PopComments({ comment, user, show, redraw }) {
   const [editting, setEditting] = useState(false);
-  const [openComment, setOpenComment] = useState("");
+  //const [content, setContent] = useState("");
   const navi = useNavigate();
-
+  const contentRef = useRef(comment.content)
   //const comments = await UserService.getComments(postID)
 
   function handleChange(e) {
-    setOpenComment(e.target.value);
+    //setContent(e.target.value);
+    contentRef.current = e.target.value
   }
 
   function handleClick() {
     if (editting) {
       setEditting(false);
-      setOpenComment({});
+      //setContent('');
     } else {
       setEditting(true);
-      setOpenComment(comment.content);
     }
   }
+
+
 
   //finish submit/delete pls
   async function handleSubmit(e) {
     e.preventDefault();
     //const form = new FormData(e.target);
-    const form = openComment
-    const result = await UserService.editComment(comment._id, form);
+    const result = await UserService.editComment(comment._id, {id: comment._id, content: contentRef.current});
     if (result.err) {
       navi("/error", { state: { source: "Comments", err: result.err } });
+      console.log(result.err)
       return;
+    } else {
+      setEditting(false)
+      redraw(comment._id, contentRef.current)
     }
     //error handling
   }
@@ -69,17 +74,17 @@ export default function PopComments({ comment, user }) {
           </button>
         </div>
       </div>
-      <div hidden={editting ? false : true}>
+      <div className="commCard" hidden={editting ? false : true}>
         <form onSubmit={handleSubmit}>
           <label htmlFor="comContent">
             Comment:{" "}
-            <textarea
+          </label>
+          <textarea
               id="comContent"
               name="content"
-              value={openComment}
               onChange={handleChange}
+              defaultValue={contentRef.current}
             />
-          </label>
           <button className="submit" type="submit" hidden={!user ? true : false}>Submit</button>
           <button className="delete" type="button" onClick={handleClick}>Close</button>
         </form>

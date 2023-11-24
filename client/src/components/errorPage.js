@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
 export default function ErrorPage({ errs }) {
@@ -11,9 +11,13 @@ export default function ErrorPage({ errs }) {
   //err: the error, source: the component who passed the error
   //useLocation to get err object from useNavigate
 
-  if (state.err) {
-    setDisplayErr({ ...state });
-  } else setDisplayErr({ ...errs });
+  useEffect(() => {
+    if (state) {
+      setDisplayErr({ ...state });
+      console.log(state)
+    } else if (errs) setDisplayErr({ ...errs });
+      else setDisplayErr({source: 'Global', err: 'unknown'})  
+  }, [])
 
   return (
     <div className="errorDiv">

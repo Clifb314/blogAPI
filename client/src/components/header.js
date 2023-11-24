@@ -14,7 +14,7 @@ export default function Header({ user, setUser }) {
   let checkUser;
   if (user) {
     checkUser = (
-      <ul>
+      <ul className="accLinks">
         <li>
           <Link to='/account'>Account</Link>
         </li>
@@ -42,7 +42,7 @@ export default function Header({ user, setUser }) {
     <div className="header">
       <div className="logo">Logo will go here</div>
       <div className="homeLinks">
-        <ul>
+        <ul className="naviLinks">
           <li>
             <Link to="/home">Home</Link>
           </li>
@@ -52,8 +52,8 @@ export default function Header({ user, setUser }) {
           <li>
             <Link to="/top">Top Posts</Link>
           </li>
-          <li>{checkUser}</li>
         </ul>
+        {checkUser}
       </div>
     </div>
   );

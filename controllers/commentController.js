@@ -62,18 +62,22 @@ exports.createComment = [
 
 exports.editComment = [
   //validate token
-  (req, res) => {
-    jwt.verify(
-      req.token,
-      process.env.SECRET,
-      { issuer: "CB" },
-      function (err, decoded) {
-        if (err) return res.status(400).json(err);
-        req.decoded = decoded;
-        next();
-      }
-    );
-  },
+  // (req, res) => {
+  //   jwt.verify(
+  //     req.token,
+  //     process.env.SECRET,
+  //     { issuer: "CB" },
+  //     function (err, decoded) {
+  //       if (err) {
+  //         return res.status(400).json(err);
+  //       } else {
+  //         req.decoded = decoded;
+  //         console.log(decoded)
+  //         next();  
+  //       }
+  //     }
+  //   );
+  // },
 
   //validate input
   body("content")
@@ -83,9 +87,15 @@ exports.editComment = [
     .escape(),
 
   async (req, res, next) => {
+    const decoded = jwt.verify(req.token, process.env.SECRET, {issuer: 'CB'})
+    if (!decoded._id) {
+      console.log(decoded._id)
+      return res.status(400).json({err: 'User mismatch'})
+    }
+    console.log(req.body)
     const errors = validationResult(req.body);
     //parent can also come from req.params.postID
-    const { author, content, date, parent, id } = req.body;
+    const { content, id } = req.body;
 
     if (!errors.isEmpty()) return res.json(errors.array());
     // const update = {
@@ -94,22 +104,33 @@ exports.editComment = [
     //   date,
     //   parent,
     // };
-    const newComment = await Comment.findByIdAndUpdate(
-      id,
-      { content: content },
-      {
-        new: true,
-      }
-    ).exec();
-    return res.json(newComment);
+    try {
+      console.log('validation passed')
+      const newComment = await Comment.findOneAndUpdate(
+        {_id: id, author: decoded._id},
+        { content: content },
+        {
+          new: true,
+        }
+      ).exec();
+      return res.json(newComment);
+    } catch(error) {
+      return res.json({err: error})
+    }
+
   },
 ];
 
 exports.deleteComment = async (req, res, next) => {
-  const myComment = await Comment.findByIdAndRemove(req.params.commentID);
-  if (!myComment) return res.status(400).json({ error: "Comment not found" });
+  try {
+    const myComment = await Comment.findByIdAndRemove(req.params.commentID);
+    if (!myComment) return res.status(400).json({ error: "Comment not found" });
+  
+    return res.json({ message: `Comment (id: ${myComment._id}) deleted` });
+  } catch(error) {
+    return res.json({err: error})
+  }
 
-  return res.json({ message: `Comment (id: ${myComment._id}) deleted` });
 };
 
 exports.commentDetail = async (req, res) => {
@@ -117,5 +138,5 @@ exports.commentDetail = async (req, res) => {
 
   if (!myComment) return res.json({ error: "Comment not found in database" });
 
-  return res.json(myComment);
+  else return res.json(myComment);
 };

@@ -63,6 +63,8 @@ div.header {
   width: 100%;
   height: 10vh;
   border-bottom: 2px solid black;
+  display: flex;
+  flex-direction: column;
 }
 
 div.header li {
@@ -75,6 +77,36 @@ div.homepage {
   flex: 1;
 }
 
+/* header */
+div.homeLinks {
+  display: flex;
+  justify-content: space-around;
+}
+
+div.homeLinks li {
+  flex: auto;
+  margin: 6px;
+}
+
+div.homeLinks a {
+  text-decoration: none;
+  color: black;
+  font-weight: 700;
+}
+
+div.homeLinks li:hover {
+  color: blue;
+  background-color: azure;
+}
+
+div.homeLinks ul {
+  padding: 0;
+  margin: 0;
+}
+
+
+
+
 /* buttons */
 div.votes button,
 div.userbtns button,
@@ -82,7 +114,8 @@ div.commOut button,
 div.userEdit button,
 .msgBubble button,
 .register button,
-.commentForm button {
+.commentForm button,
+.msgForm button {
   border-radius: 10px;
   margin: 4px;
   padding: 2px 0px;
@@ -116,10 +149,21 @@ button.delete:hover, button.closeAll:hover {
   gap: 12px;
 }
 
-.msgCard {
+.msgCard, .msgForm {
   padding: 6px;
   text-align: left;
   background-color: azure;
+}
+
+.msgForm label, .msgForm textarea {
+  display: block;
+  margin: 0 4px;
+}
+
+.msgForm input {
+  width: 40%;
+  display: block;
+  margin: 4px;
 }
 
 .msgCard p {
@@ -169,8 +213,12 @@ span.title {
 }
 
 /* Comments */
-.comLabel {
+.comLabel, .commCard label, .commCard textarea {
   display: block;
+}
+
+.commCard label {
+  margin: 4px;
 }
 
 .commOut p.author {
@@ -196,6 +244,7 @@ span.title {
 
 div.commCard {
   font-size: 12px;
+  padding: 4px;
   background-color: rgb(210, 208, 218);
   animation: openCom var(--toast-speed);
 }

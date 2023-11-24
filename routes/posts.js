@@ -14,7 +14,7 @@ router.get('/top', postController.topPosts)
 router.post('/create', postController.createPost)
 
 //update post
-router.put('/:postID/update', postController.updatePost)
+router.put('/:postID/edit', postController.updatePost)
 
 //delete post
 router.delete('/:postID/delete', postController.deletePost)

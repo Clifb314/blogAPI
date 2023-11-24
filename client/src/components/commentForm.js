@@ -27,7 +27,7 @@ export default function CommentForm({ postID, postAuth, user }) {
     }
   }
 
-  const toggleMsg = user === postAuth ? " " : "Click to respond";
+  const toggleMsg = user === postAuth ? " " : "Reply";
 
   function toggle() {
     if (user === postAuth) return;

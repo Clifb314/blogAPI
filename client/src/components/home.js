@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
+import auth from "../utils/auth";
 import UserService from "../utils/dataAccess";
 import MsgCard from "./msgCard";
 import { v4 as uuidv4 } from "uuid";
 
-export default function Home({ user, noti }) {
+export default function Home({ user, noti, logout }) {
   //Lets display most recent post, total votes, etc for signed in user
   //for guest: explanation of what's viewable, instructions to sign up
   const [userInfo, setUserInfo] = useState(null);
@@ -13,6 +14,8 @@ export default function Home({ user, noti }) {
       if (user) {
         const myUser = await UserService.getUserHome();
         if (myUser.err) {
+          auth.logout()
+          logout(null)
           noti("failure", myUser.err);
           return;
         } else {

@@ -43,7 +43,7 @@ class UserService {
   async getUserHome() {
     try {
       //set up a seperate homepage from user detail page
-      const response = await fetch(`${APIurl}/home`, {
+      const response = await fetch(`${APIurl}home`, {
         method: "GET",
         mode: "cors",
         headers: authHeader(),
@@ -157,10 +157,15 @@ class UserService {
       const response = await fetch(postsURL + postID + "/edit", {
         method: "PUT",
         mode: "cors",
-        headers: authHeader(),
-        body,
+        headers: {
+          ...authHeader(),
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
       });
       if (!response.ok) {
+        const output = await response.json()
+        console.log(output)
         throw new Error("Error accessing database");
       } else return await response.json();
     } catch(error) {

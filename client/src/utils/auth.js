@@ -1,6 +1,13 @@
 const url = "http://localhost:5000/api/";
 
 class Auth {
+
+  logout() {
+    localStorage.removeItem("user");
+    return { message: "successfully logged out" };
+  }
+
+
   async login(body) {
     //add in try/catch
     try {
@@ -17,17 +24,15 @@ class Auth {
       } else {
         const data = await response.json()
         localStorage.setItem("user", JSON.stringify(data));
+        setTimeout(() => {
+          localStorage.removeItem('user')
+        }, 900000)
         return { message: "Logged in", user: data.user };
       }
     } catch(error) {
       console.error("Error", error);
       return { err: "Could not access database" };
     }
-  }
-
-  logout() {
-    localStorage.removeItem("user");
-    return { message: "successfully logged out" };
   }
 
   async register(body) {
@@ -66,9 +71,6 @@ class Auth {
     else output = null
     return output;
   }
-
-
-
 }
 
 export default new Auth();
