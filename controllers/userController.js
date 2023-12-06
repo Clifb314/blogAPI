@@ -35,7 +35,6 @@ exports.login = function (req, res, next) {
         message: "Incorrect password or username",
         user,
         err,
-        body: req.body.username,
       });
     }
     //token generation
@@ -109,7 +108,7 @@ exports.signup = [
     const { username, email, password, checkPW } = req.body;
 
     //check if user exists
-    const checkUser = await User.findOne({ username: username });
+    const checkUser = await User.findOne({ username: username }).exec();
     if (checkUser) {
       return res.status(409).json({ custError: "Username taken" });
     }
